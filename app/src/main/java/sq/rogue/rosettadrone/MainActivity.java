@@ -15,6 +15,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,8 +24,11 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
@@ -32,6 +37,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -94,15 +100,17 @@ public class MainActivity extends AppCompatActivity {
     private Button mButtonClear;
     private ToggleButton toggleBtnArming;
 
+    private FragmentManager fragmentManager;
     private LogFragment logDJI;
     private LogFragment logToGCS;
     private LogFragment logFromGCS;
+    private BottomNavigationView bottomNavigationView;
+
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private LogPagerAdapter adapter;
 
     private SharedPreferences prefs;
-
 
     private String mNewOutbound = "";
     private String mNewInbound = "";
@@ -264,9 +272,9 @@ public class MainActivity extends AppCompatActivity {
         requestPermissions();
 
         mButtonClear = (Button) findViewById(R.id.button_clear);
-        viewPager = (ViewPager) findViewById(R.id.pager);
+//        viewPager = (ViewPager) findViewById(R.id.pager);
         toggleBtnArming = (ToggleButton) findViewById(R.id.toggBtnSafety);
-        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+//        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
         mButtonClear.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -291,46 +299,49 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        tabLayout.removeAllTabs();
-        tabLayout.addTab(tabLayout.newTab().setText("DJI"));
-        tabLayout.addTab(tabLayout.newTab().setText("To GCS"));
-        tabLayout.addTab(tabLayout.newTab().setText("From GCS"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        initFragments();
+        initBottomNav();
 
-        LogFragment[] fragments = new LogFragment[3];
-        if (savedInstanceState == null) {
-            for (int i = 0; i < 3; i++)
-                fragments[i] = new LogFragment();
-        } else {
-            for (int i = 0; i < 3; i++)
-                fragments[i] = (LogFragment) getSupportFragmentManager().getFragments().get(i);
-        }
-        adapter = new LogPagerAdapter(fragments, getSupportFragmentManager());
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        viewPager.setOffscreenPageLimit(2);
+//        tabLayout.removeAllTabs();
+//        tabLayout.addTab(tabLayout.newTab().setText("DJI"));
+//        tabLayout.addTab(tabLayout.newTab().setText("To GCS"));
+//        tabLayout.addTab(tabLayout.newTab().setText("From GCS"));
+//        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
+//        LogFragment[] fragments = new LogFragment[3];
+//        if (savedInstanceState == null) {
+//            for (int i = 0; i < 3; i++)
+//                fragments[i] = new LogFragment();
+//        } else {
+//            for (int i = 0; i < 3; i++)
+//                fragments[i] = (LogFragment) getSupportFragmentManager().getFragments().get(i);
+//        }
+//        adapter = new LogPagerAdapter(fragments, getSupportFragmentManager());
+//        viewPager.setAdapter(adapter);
+//        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+//        viewPager.setOffscreenPageLimit(2);
+//
+//
+//        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//            @Override
+//            public void onTabSelected(TabLayout.Tab tab) {
+//                viewPager.setCurrentItem(tab.getPosition());
+//            }
+//
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab) {
+//
+//            }
+//
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab) {
+//
+//            }
+//        });
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-
-        logDJI = (LogFragment) adapter.getItem(0);
-        logToGCS = (LogFragment) adapter.getItem(1);
-        logFromGCS = (LogFragment) adapter.getItem(2);
+//        logDJI = (LogFragment) adapter.getItem(0);
+//        logToGCS = (LogFragment) adapter.getItem(1);
+//        logFromGCS = (LogFragment) adapter.getItem(2);
 
         mModel = new DroneModel(this, null);
         mMavlinkReceiver = new MAVLinkReceiver(this, mModel);
@@ -341,6 +352,45 @@ public class MainActivity extends AppCompatActivity {
         mUIHandler.postDelayed(RunnableUpdateUI, 1000);
 
         //NativeHelper.getInstance().init();
+    }
+
+    /**
+     *
+     */
+    private void initFragments() {
+        fragmentManager = getSupportFragmentManager();
+        logDJI = new LogFragment();
+        logFromGCS = new LogFragment();
+        logToGCS = new LogFragment();
+    }
+
+    /**
+     *
+     */
+    private void initBottomNav() {
+        bottomNavigationView = findViewById(R.id.navigationView);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        FragmentTransaction transaction = fragmentManager.beginTransaction();
+                        switch (item.getItemId()) {
+                            case R.id.dji:
+                                transaction.replace(R.id.fragment_container, logDJI);
+                                break;
+                            case R.id.gcs_up:
+                                transaction.replace(R.id.fragment_container, logToGCS);
+                                break;
+                            case R.id.gcs_down:
+                                transaction.replace(R.id.fragment_container, logFromGCS);
+                                break;
+                        }
+                        transaction.commit();
+                        return true;
+                    }
+                }
+        );
     }
 
     private void deleteApplicationDirectory() {
@@ -453,46 +503,49 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        boolean result = super.onPrepareOptionsMenu(menu);
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//        boolean result = super.onPrepareOptionsMenu(menu);
+//
+//        Menu bottomNavMenu = bottomNavigationView.getMenu();
+//        Drawable dji = bottomNavMenu.findItem(R.id.dji).getIcon();
+//        Drawable gcsDown = bottomNavMenu.findItem(R.id.gcs_down).getIcon();
+//        Drawable gcsUp = bottomNavMenu.findItem(R.id.gcs_up).getIcon();
+//
+//        if (dji != null) {
+//            if (mProduct instanceof Aircraft)
+//                dji.setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
+//            else
+//                dji.setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+//        }
+//
+//        if (gcsDown != null) {
+//            if (System.currentTimeMillis() - mMavlinkReceiver.getTimestampLastGCSHeartbeat() <= GCS_TIMEOUT_mSEC)
+//                gcsUp.setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
+//            else
+//                gcsDown.setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+//        }
+//
+//        return result;
+//    }
 
-        View view_status_dji = findViewById(R.id.action_dji);
-        View view_status_gcs = findViewById(R.id.action_gcs);
-
-        if (view_status_dji != null && view_status_dji instanceof TextView) {
-            if (mProduct instanceof Aircraft)
-                ((TextView) view_status_dji).setTextColor(Color.GREEN);
-            else
-                ((TextView) view_status_dji).setTextColor(Color.RED);
-        }
-
-        if (view_status_gcs != null && view_status_gcs instanceof TextView) {
-            if (System.currentTimeMillis() - mMavlinkReceiver.getTimestampLastGCSHeartbeat() <= GCS_TIMEOUT_mSEC)
-                ((TextView) view_status_gcs).setTextColor(Color.GREEN);
-            else
-                ((TextView) view_status_gcs).setTextColor(Color.RED);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(TAG, "menu item selected");
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.action_dji:
-                onClickDJIStatus();
-                return true;
-            case R.id.action_gcs:
-                onClickGCSStatus();
-                return true;
-            case R.id.action_settings:
-                onClickSettings();
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        Log.d(TAG, "menu item selected");
+//        // Handle item selection
+//        switch (item.getItemId()) {
+//            case R.id.action_dji:
+//                onClickDJIStatus();
+//                return true;
+//            case R.id.action_gcs:
+//                onClickGCSStatus();
+//                return true;
+//            case R.id.action_settings:
+//                onClickSettings();
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 
     private void onClickDJIStatus() {
 
