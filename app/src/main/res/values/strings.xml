@@ -13,4 +13,5 @@
 
     <string name="dji">DJI</string>
     <string name="gcs">GCS</string>
+    <string name="settings">Settings</string>
 </resources>

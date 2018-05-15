@@ -111,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
 
     private TabLayout tabLayout;
-    private ViewPager viewPager;
     private LogPagerAdapter adapter;
 
     private SharedPreferences prefs;
@@ -303,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        initFragments();
+        initLogs(savedInstanceState);
         initBottomNav();
 
 //        tabLayout.removeAllTabs();
@@ -312,18 +311,6 @@ public class MainActivity extends AppCompatActivity {
 //        tabLayout.addTab(tabLayout.newTab().setText("From GCS"));
 //        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-//        LogFragment[] fragments = new LogFragment[3];
-//        if (savedInstanceState == null) {
-//            for (int i = 0; i < 3; i++)
-//                fragments[i] = new LogFragment();
-//        } else {
-//            for (int i = 0; i < 3; i++)
-//                fragments[i] = (LogFragment) getSupportFragmentManager().getFragments().get(i);
-//        }
-//        adapter = new LogPagerAdapter(fragments, getSupportFragmentManager());
-//        viewPager.setAdapter(adapter);
-//        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-//        viewPager.setOffscreenPageLimit(2);
 //
 //
 //        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -343,9 +330,7 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-//        logDJI = (LogFragment) adapter.getItem(0);
-//        logToGCS = (LogFragment) adapter.getItem(1);
-//        logFromGCS = (LogFragment) adapter.getItem(2);
+
 
         mModel = new DroneModel(this, null);
         mMavlinkReceiver = new MAVLinkReceiver(this, mModel);
@@ -361,11 +346,20 @@ public class MainActivity extends AppCompatActivity {
     /**
      *
      */
-    private void initFragments() {
-        fragmentManager = getSupportFragmentManager();
-        logDJI = new LogFragment();
-        logFromGCS = new LogFragment();
-        logToGCS = new LogFragment();
+    private void initLogs(Bundle savedInstanceState) {
+        LogFragment[] fragments = new LogFragment[3];
+        if (savedInstanceState == null) {
+            for (int i = 0; i < 3; i++)
+                fragments[i] = new LogFragment();
+        } else {
+            for (int i = 0; i < 3; i++)
+                fragments[i] = (LogFragment) getSupportFragmentManager().getFragments().get(i);
+        }
+        adapter = new LogPagerAdapter(fragments, getSupportFragmentManager());
+
+        logDJI = (LogFragment) adapter.getItem(0);
+        logToGCS = (LogFragment) adapter.getItem(1);
+        logFromGCS = (LogFragment) adapter.getItem(2);
     }
 
     /**
@@ -378,19 +372,19 @@ public class MainActivity extends AppCompatActivity {
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        FragmentTransaction transaction = fragmentManager.beginTransaction();
                         switch (item.getItemId()) {
                             case R.id.action_dji:
-                                transaction.replace(R.id.fragment_container, logDJI);
+                                adapter.getItem(0);
                                 break;
                             case R.id.action_gcs_up:
-                                transaction.replace(R.id.fragment_container, logToGCS);
+                                adapter.getItem(1);
+
                                 break;
                             case R.id.action_gcs_down:
-                                transaction.replace(R.id.fragment_container, logFromGCS);
+                                adapter.getItem(2);
+
                                 break;
                         }
-                        transaction.commit();
                         return true;
                     }
                 }
