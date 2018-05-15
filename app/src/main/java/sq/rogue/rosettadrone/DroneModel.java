@@ -75,7 +75,6 @@ import static com.MAVLink.enums.MAV_CMD.MAV_CMD_DO_DIGICAM_CONTROL;
 import static com.MAVLink.enums.MAV_CMD.MAV_CMD_NAV_TAKEOFF;
 import static com.MAVLink.enums.MAV_COMPONENT.MAV_COMP_ID_AUTOPILOT1;
 import static sq.rogue.rosettadrone.util.getTimestampMicroseconds;
-import static sq.rogue.rosettadrone.util.safeSleep;
 
 
 public class DroneModel implements CommonCallbacks.CompletionCallback {

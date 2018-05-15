@@ -6,34 +6,22 @@ package sq.rogue.rosettadrone;
 // MenuItemTetColor: RPP @ https://stackoverflow.com/questions/31713628/change-menuitem-text-color-programmatically
 
 import android.Manifest;
-import android.app.Notification;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
@@ -41,10 +29,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -53,7 +39,6 @@ import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.Parser;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,30 +49,23 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import dji.common.error.DJIError;
 import dji.common.error.DJISDKError;
-import dji.common.product.Model;
 import dji.sdk.base.BaseComponent;
 import dji.sdk.base.BaseProduct;
-import dji.sdk.camera.VideoFeeder;
 import dji.sdk.products.Aircraft;
 import dji.sdk.sdkmanager.DJISDKManager;
 import sq.rogue.rosettadrone.logs.LogFragment;
-import sq.rogue.rosettadrone.logs.LogPagerAdapter;
 import sq.rogue.rosettadrone.settings.SettingsActivity;
-import sq.rogue.rosettadrone.video.DJIVideoStreamDecoder;
-import sq.rogue.rosettadrone.video.H264Packetizer;
-import sq.rogue.rosettadrone.video.NativeHelper;
 import sq.rogue.rosettadrone.video.VideoService;
+
 import static sq.rogue.rosettadrone.util.safeSleep;
 import static sq.rogue.rosettadrone.video.VideoService.ACTION_DRONE_CONNECTED;
 import static sq.rogue.rosettadrone.video.VideoService.ACTION_DRONE_DISCONNECTED;
 import static sq.rogue.rosettadrone.video.VideoService.ACTION_RESTART;
-import static sq.rogue.rosettadrone.video.VideoService.ACTION_SEND_NAL;
 import static sq.rogue.rosettadrone.video.VideoService.ACTION_SET_MODEL;
 import static sq.rogue.rosettadrone.video.VideoService.ACTION_START;
 import static sq.rogue.rosettadrone.video.VideoService.ACTION_STOP;
@@ -109,9 +87,6 @@ public class MainActivity extends AppCompatActivity {
     private LogFragment logToGCS;
     private LogFragment logFromGCS;
     private BottomNavigationView bottomNavigationView;
-
-    private TabLayout tabLayout;
-    private LogPagerAdapter adapter;
 
     private SharedPreferences prefs;
 
@@ -274,8 +249,7 @@ public class MainActivity extends AppCompatActivity {
 
         requestPermissions();
 
-        mButtonClear = (Button) findViewById(R.id.button_clear);
-//        viewPager = (ViewPager) findViewById(R.id.pager);
+        mButtonClear = findViewById(R.id.button_clear);
         toggleBtnArming = (ToggleButton) findViewById(R.id.toggBtnSafety);
 //        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
@@ -302,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        initLogs(savedInstanceState);
+        initLogs();
         initBottomNav();
 
 //        tabLayout.removeAllTabs();
@@ -331,7 +305,6 @@ public class MainActivity extends AppCompatActivity {
 //        });
 
 
-
         mModel = new DroneModel(this, null);
         mMavlinkReceiver = new MAVLinkReceiver(this, mModel);
         loadMockParamFile();
@@ -346,20 +319,22 @@ public class MainActivity extends AppCompatActivity {
     /**
      *
      */
-    private void initLogs(Bundle savedInstanceState) {
-        LogFragment[] fragments = new LogFragment[3];
-        if (savedInstanceState == null) {
-            for (int i = 0; i < 3; i++)
-                fragments[i] = new LogFragment();
-        } else {
-            for (int i = 0; i < 3; i++)
-                fragments[i] = (LogFragment) getSupportFragmentManager().getFragments().get(i);
-        }
-        adapter = new LogPagerAdapter(fragments, getSupportFragmentManager());
+    private void initLogs() {
+        fragmentManager = getSupportFragmentManager();
+        logDJI = new LogFragment();
+        logToGCS = new LogFragment();
+        logFromGCS = new LogFragment();
 
-        logDJI = (LogFragment) adapter.getItem(0);
-        logToGCS = (LogFragment) adapter.getItem(1);
-        logFromGCS = (LogFragment) adapter.getItem(2);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.add(R.id.fragment_container, logDJI);
+        fragmentTransaction.add(R.id.fragment_container, logToGCS);
+        fragmentTransaction.add(R.id.fragment_container, logFromGCS);
+
+        fragmentTransaction.hide(logToGCS);
+        fragmentTransaction.hide(logFromGCS);
+
+        fragmentTransaction.commit();
     }
 
     /**
@@ -372,19 +347,25 @@ public class MainActivity extends AppCompatActivity {
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                         switch (item.getItemId()) {
                             case R.id.action_dji:
-                                adapter.getItem(0);
+                                fragmentTransaction.show(logDJI);
+                                fragmentTransaction.hide(logToGCS);
+                                fragmentTransaction.hide(logFromGCS);
                                 break;
                             case R.id.action_gcs_up:
-                                adapter.getItem(1);
-
+                                fragmentTransaction.hide(logDJI);
+                                fragmentTransaction.show(logToGCS);
+                                fragmentTransaction.hide(logFromGCS);
                                 break;
                             case R.id.action_gcs_down:
-                                adapter.getItem(2);
-
+                                fragmentTransaction.hide(logDJI);
+                                fragmentTransaction.hide(logToGCS);
+                                fragmentTransaction.show(logFromGCS);
                                 break;
                         }
+                        fragmentTransaction.commit();
                         return true;
                     }
                 }
@@ -724,8 +705,8 @@ public class MainActivity extends AppCompatActivity {
 
         return videoIP;
     }
+
     /**
-     *
      * @param action
      * @param extras
      * @return
@@ -734,7 +715,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, VideoService.class);
         intent.setAction(action);
 
-        for (Object extra: extras) {
+        for (Object extra : extras) {
 //            intent.putExtra()
         }
 
@@ -742,7 +723,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     *
      * @param intent
      */
     private void sendIntent(Intent intent) {
