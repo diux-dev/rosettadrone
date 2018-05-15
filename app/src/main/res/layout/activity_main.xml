@@ -56,11 +56,11 @@
         <!--android:minHeight="?attr/actionBarSize"-->
         <!--android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>-->
 
-    <sq.rogue.rosettadrone.logs.LogViewPager
-        android:id="@+id/pager"
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@id/fragment_container"/>
+    <!--<sq.rogue.rosettadrone.logs.LogViewPager-->
+        <!--android:id="@+id/pager"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="fill_parent"-->
+        <!--android:layout_below="@id/fragment_container"/>-->
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigationView"
@@ -72,7 +72,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:menu="@menu/nav"
+        app:menu="@menu/nav_menu"
          />
 
 

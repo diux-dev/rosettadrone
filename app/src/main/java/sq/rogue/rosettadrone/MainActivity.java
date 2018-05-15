@@ -29,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Toast;
@@ -370,6 +371,32 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        ViewGroup navigationMenuView = (ViewGroup)bottomNavigationView.getChildAt(0);
+        ViewGroup gcsUpMenuItem = (ViewGroup)navigationMenuView.getChildAt(1);
+        ViewGroup gcsDownMenuItem = (ViewGroup)navigationMenuView.getChildAt(2);
+
+
+
+        gcsUpMenuItem.setLongClickable(true);
+        gcsUpMenuItem.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onLongClickGCSUp();
+                return true;
+            }
+        });
+
+        gcsDownMenuItem.setLongClickable(true);
+        gcsDownMenuItem.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onLongClickGCSDown();
+                return true;
+            }
+        });
+
+
     }
 
     private void deleteApplicationDirectory() {
@@ -477,7 +504,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_toolbar, menu);
+        inflater.inflate(R.menu.toolbar_menu, menu);
 
         return true;
     }
@@ -488,28 +515,26 @@ public class MainActivity extends AppCompatActivity {
 //        boolean result = super.onPrepareOptionsMenu(menu);
 //
 //        Menu bottomNavMenu = bottomNavigationView.getMenu();
-//        Drawable dji = bottomNavMenu.findItem(R.id.dji).getIcon();
-//        Drawable gcsDown = bottomNavMenu.findItem(R.id.gcs_down).getIcon();
-//        Drawable gcsUp = bottomNavMenu.findItem(R.id.gcs_up).getIcon();
+//        MenuItem dji = bottomNavMenu.findItem(R.id.action_dji);
+//        MenuItem gcsDown = bottomNavMenu.findItem(R.id.action_gcs_down);
+//        MenuItem gcsUp = bottomNavMenu.findItem(R.id.action_gcs_up);
 //
-//        PorterDuffColorFilter greenFilter = new PorterDuffColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-//        PorterDuffColorFilter redFilter = new PorterDuffColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
-//
-////        getResources().getColor(R.color.green);
 //        if (dji != null) {
-//            dji.mutate();
-//            if (mProduct instanceof Aircraft)
-//                dji.setColorFilter(greenFilter);
-//            else
-//                dji.setColorFilter(redFilter);
+//            if (mProduct instanceof Aircraft) {
+//                dji.setEnabled(true);
+//            }
+//            else {
+//                dji.setEnabled(false);
+//            }
 //        }
 //
 //        if (gcsDown != null) {
-//            gcsDown.mutate();
-//            if (System.currentTimeMillis() - mMavlinkReceiver.getTimestampLastGCSHeartbeat() <= GCS_TIMEOUT_mSEC)
-//                gcsDown.setColorFilter(greenFilter);
-//            else
-//                gcsDown.setColorFilter(redFilter);
+//            if (System.currentTimeMillis() - mMavlinkReceiver.getTimestampLastGCSHeartbeat() <= GCS_TIMEOUT_mSEC) {
+//                gcsDown.setEnabled(true);
+//            }
+//            else {
+//                gcsDown.setEnabled(false);
+//            }
 //        }
 //
 //        return result;
@@ -527,14 +552,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void onClickDJIStatus() {
+    private void onLongClickGCSUp() {
 
-        Log.d(TAG, "onClickDJIStatus()");
+        Log.d(TAG, "onLongClickGCSUp()");
         mModel.startWaypointMission();
     }
 
-    private void onClickGCSStatus() {
-        Log.d(TAG, "onClickGCSStatus()");
+    private void onLongClickGCSDown() {
+        Log.d(TAG, "onLongClickGCSDown()");
         mModel.echoLoadedMission();
     }
 
