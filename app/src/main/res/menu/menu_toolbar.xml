@@ -12,11 +12,11 @@
         <!--android:orderInCategory="300"-->
         <!--app:showAsAction="always"-->
         <!--android:title="GCS"/>-->
-    <!--<item-->
-        <!--android:id="@+id/action_settings"-->
-        <!--android:orderInCategory="400"-->
-        <!--app:showAsAction="always"-->
-        <!--android:title="Settings"-->
-        <!--android:icon="@drawable/ic_settings_white_24dp"/>-->
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="400"
+        app:showAsAction="always"
+        android:title="Settings"
+        android:icon="@drawable/ic_settings_white_24dp"/>
 
 </menu>

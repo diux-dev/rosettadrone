@@ -15,7 +15,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -29,6 +31,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
@@ -376,13 +380,13 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         FragmentTransaction transaction = fragmentManager.beginTransaction();
                         switch (item.getItemId()) {
-                            case R.id.dji:
+                            case R.id.action_dji:
                                 transaction.replace(R.id.fragment_container, logDJI);
                                 break;
-                            case R.id.gcs_up:
+                            case R.id.action_gcs_up:
                                 transaction.replace(R.id.fragment_container, logToGCS);
                                 break;
-                            case R.id.gcs_down:
+                            case R.id.action_gcs_down:
                                 transaction.replace(R.id.fragment_container, logFromGCS);
                                 break;
                         }
@@ -503,6 +507,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    //TODO
 //    @Override
 //    public boolean onPrepareOptionsMenu(Menu menu) {
 //        boolean result = super.onPrepareOptionsMenu(menu);
@@ -512,40 +517,40 @@ public class MainActivity extends AppCompatActivity {
 //        Drawable gcsDown = bottomNavMenu.findItem(R.id.gcs_down).getIcon();
 //        Drawable gcsUp = bottomNavMenu.findItem(R.id.gcs_up).getIcon();
 //
+//        PorterDuffColorFilter greenFilter = new PorterDuffColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
+//        PorterDuffColorFilter redFilter = new PorterDuffColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+//
+////        getResources().getColor(R.color.green);
 //        if (dji != null) {
+//            dji.mutate();
 //            if (mProduct instanceof Aircraft)
-//                dji.setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
+//                dji.setColorFilter(greenFilter);
 //            else
-//                dji.setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+//                dji.setColorFilter(redFilter);
 //        }
 //
 //        if (gcsDown != null) {
+//            gcsDown.mutate();
 //            if (System.currentTimeMillis() - mMavlinkReceiver.getTimestampLastGCSHeartbeat() <= GCS_TIMEOUT_mSEC)
-//                gcsUp.setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
+//                gcsDown.setColorFilter(greenFilter);
 //            else
-//                gcsDown.setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+//                gcsDown.setColorFilter(redFilter);
 //        }
 //
 //        return result;
 //    }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        Log.d(TAG, "menu item selected");
-//        // Handle item selection
-//        switch (item.getItemId()) {
-//            case R.id.action_dji:
-//                onClickDJIStatus();
-//                return true;
-//            case R.id.action_gcs:
-//                onClickGCSStatus();
-//                return true;
-//            case R.id.action_settings:
-//                onClickSettings();
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "menu item selected");
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                onClickSettings();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     private void onClickDJIStatus() {
 
