@@ -16,7 +16,6 @@ public class LogFragment extends Fragment {
     private final int DEFAULT_MAX_CHARACTERS = 200000;
 
     private TextView mTextViewTraffic;
-    //    private ScrollView mScrollView;
     private boolean mViewAtBottom = true;
 
     private int mMaxCharacters = DEFAULT_MAX_CHARACTERS;
@@ -29,7 +28,7 @@ public class LogFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_log, container, false);
-        mTextViewTraffic = (TextView) view.findViewById(R.id.textView_traffic);
+        mTextViewTraffic = (TextView) view.findViewById(R.id.log);
         mTextViewTraffic.setMovementMethod(new ScrollingMovementMethod());
         mTextViewTraffic.setHorizontallyScrolling(true);
 
@@ -40,41 +39,6 @@ public class LogFragment extends Fragment {
                 return true;
             }
         });
-
-//        mScrollView = (ScrollView) view.findViewById(R.id.textAreaScrollerTraffic);
-
-//        mTextViewTraffic.addTextChangedListener(new TextWatcher() {
-//
-//            @Override
-//            public void afterTextChanged(Editable arg0) {
-//                if (mViewAtBottom)
-//                    mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
-//            }
-//
-//            @Override
-//            public void beforeTextChanged(CharSequence arg0, int arg1,
-//                                          int arg2, int arg3) {
-//                //override stub
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence arg0, int arg1, int arg2,
-//                                      int arg3) {
-//                //override stub
-//            }
-//        });
-//        mScrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-//            @Override
-//            public void onScrollChanged() {
-//                if (mScrollView != null) {
-//                    if (mScrollView.getChildAt(0).getBottom() <= (mScrollView.getHeight() + mScrollView.getScrollY()) + 200) {
-//                        mViewAtBottom = true;
-//                    } else {
-//                        mViewAtBottom = false;
-//                    }
-//                }
-//            }
-//        });
         return view;
     }
 
@@ -121,17 +85,6 @@ public class LogFragment extends Fragment {
      * @param text The text to append to the log.
      */
     public void appendLogText(String text) {
-        /*
-        Using substring is very expensive
-         */
-//        String newText = mTextViewTraffic.getText().toString() + text;
-//        int overflow = newText.length() - mMaxCharacters;
-//        if (overflow > 0) {
-//            newText = newText.substring(overflow); // trim off oldest characters
-//            newText = newText.split("\n", 2)[1]; // ensure the remainder starts on a new message
-//        }
-//        mTextViewTraffic.setText(newText);
-
         checkOverflow();
 
         mTextViewTraffic.append(text);

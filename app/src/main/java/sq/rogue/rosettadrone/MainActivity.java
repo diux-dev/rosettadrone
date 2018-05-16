@@ -11,34 +11,27 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkMessage;
@@ -162,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onConnectivityChange(boolean isConnected) {
             Log.d(TAG, "onConnectivityChange()");
-            logMessageDJI("onConnectivityChange()");
+//            logMessageDJI("onConnectivityChange()");
             if (isConnected)
                 onDroneConnected();
             else
@@ -203,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onProductChange(BaseProduct oldProduct, BaseProduct newProduct) {
             Log.d(TAG, "onProductChange()");
-            logMessageDJI("onProductChange()");
+//            logMessageDJI("onProductChange()");
 
             mProduct = newProduct;
 
@@ -345,10 +338,9 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
-        ViewGroup navigationMenuView = (ViewGroup)bottomNavigationView.getChildAt(0);
-        ViewGroup gcsUpMenuItem = (ViewGroup)navigationMenuView.getChildAt(1);
-        ViewGroup gcsDownMenuItem = (ViewGroup)navigationMenuView.getChildAt(2);
-
+        ViewGroup navigationMenuView = (ViewGroup) bottomNavigationView.getChildAt(0);
+        ViewGroup gcsUpMenuItem = (ViewGroup) navigationMenuView.getChildAt(1);
+        ViewGroup gcsDownMenuItem = (ViewGroup) navigationMenuView.getChildAt(2);
 
 
         gcsUpMenuItem.setLongClickable(true);
@@ -440,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         Log.i(TAG, "onDestroy");
-        logMessageDJI("onDestroy()");
+//        logMessageDJI("onDestroy()");
         closeGCSCommunicator();
 
         mUIHandler.removeCallbacksAndMessages(null);
@@ -593,7 +585,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onDroneDisconnected() {
-        logMessageDJI("onDroneDisconnected()");
+        logMessageDJI("Drone disconnected");
         mModel.setDjiAircraft(null);
         closeGCSCommunicator();
 
