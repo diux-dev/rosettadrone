@@ -128,6 +128,9 @@ public class MainActivity extends AppCompatActivity {
                     mNewDJI = "";
                 }
                 if (mModel != null) {
+                    if (mSafety == null) {
+                        mSafety = findViewById(R.id.action_safety);
+                    }
                     if (mModel.isSafetyEnabled())
                         mSafety.setChecked(true);
                     else
@@ -502,7 +505,7 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.toolbar_menu, menu);
 
 
-//        mSafety = findViewById(R.id.action_safety_switch);
+//        mSafety = findViewById(R.id.action_safety);
 //
 //        mSafety.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 //            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -554,7 +557,8 @@ public class MainActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_safety:
-                NotificationHandler.notifySnackbar(bottomNavigationView, R.string.safety, LENGTH_LONG);
+                Log.d(TAG, "TEST");
+//                NotificationHandler.notifySnackbar(bottomNavigationView, R.string.safety, LENGTH_LONG);
                 mModel.setSafetyEnabled(!mModel.isSafetyEnabled());
                 return true;
             case R.id.action_settings:
