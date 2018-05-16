@@ -33,6 +33,14 @@ public class LogFragment extends Fragment {
         mTextViewTraffic.setMovementMethod(new ScrollingMovementMethod());
         mTextViewTraffic.setHorizontallyScrolling(true);
 
+        mTextViewTraffic.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                clearLogText();
+                return true;
+            }
+        });
+
 //        mScrollView = (ScrollView) view.findViewById(R.id.textAreaScrollerTraffic);
 
 //        mTextViewTraffic.addTextChangedListener(new TextWatcher() {

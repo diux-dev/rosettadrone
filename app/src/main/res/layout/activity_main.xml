@@ -9,31 +9,6 @@
     android:orientation="vertical"
     tools:context="sq.rogue.rosettadrone.MainActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ToggleButton
-            android:id="@+id/toggBtnSafety"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textOn="Safety Enabled"
-            android:textOff="Ready to Fly"
-            android:checked="true"
-            android:gravity="center"
-            android:textColor="@color/red"
-            />
-
-        <Button
-            android:id="@+id/button_clear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Clear Log"/>
-
-    </LinearLayout>
-
-
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="0dp"

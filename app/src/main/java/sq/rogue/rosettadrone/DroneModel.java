@@ -304,7 +304,7 @@ public class DroneModel implements CommonCallbacks.CompletionCallback {
 
     public void armMotors() {
         if (mSafetyEnabled) {
-            parent.logMessageDJI("You must turn off safety to arm motors");
+            parent.logMessageDJI("You must turn off safety_layout to arm motors");
             send_command_ack(MAV_CMD_COMPONENT_ARM_DISARM, MAV_RESULT.MAV_RESULT_DENIED);
             return;
         } else {
@@ -942,7 +942,7 @@ public class DroneModel implements CommonCallbacks.CompletionCallback {
             return;
         }
         if (mSafetyEnabled) {
-            parent.logMessageDJI("You must turn off safety to start mission");
+            parent.logMessageDJI("You must turn off safety_layout to start mission");
             return;
         }
 
@@ -1022,7 +1022,7 @@ public class DroneModel implements CommonCallbacks.CompletionCallback {
 
     public void do_takeoff() {
         if (mSafetyEnabled) {
-            parent.logMessageDJI("You must turn off safety to takeoff");
+            parent.logMessageDJI("You must turn off safety_layout to takeoff");
             send_command_ack(MAV_CMD_NAV_TAKEOFF, MAV_RESULT.MAV_RESULT_DENIED);
             return;
         }

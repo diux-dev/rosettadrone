@@ -2,16 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools">
-    <!--<item-->
-        <!--android:id="@+id/action_dji"-->
-        <!--android:orderInCategory="200"-->
-        <!--app:showAsAction="always"-->
-        <!--android:title="DJI"/>-->
-    <!--<item-->
-        <!--android:id="@+id/action_gcs"-->
-        <!--android:orderInCategory="300"-->
-        <!--app:showAsAction="always"-->
-        <!--android:title="GCS"/>-->
+
+    <item
+        android:id="@+id/action_safety"
+        android:title="@string/safety"
+        android:actionLayout="@layout/safety_layout"
+        app:showAsAction="ifRoom"
+        app:actionViewClass="android.support.v7.widget.SwitchCompat" />
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="400"

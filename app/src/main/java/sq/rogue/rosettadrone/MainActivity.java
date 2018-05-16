@@ -22,8 +22,10 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,6 +65,7 @@ import sq.rogue.rosettadrone.logs.LogFragment;
 import sq.rogue.rosettadrone.settings.SettingsActivity;
 import sq.rogue.rosettadrone.video.VideoService;
 
+import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static sq.rogue.rosettadrone.util.safeSleep;
 import static sq.rogue.rosettadrone.video.VideoService.ACTION_DRONE_CONNECTED;
 import static sq.rogue.rosettadrone.video.VideoService.ACTION_DRONE_DISCONNECTED;
@@ -80,8 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private final int GCS_TIMEOUT_mSEC = 2000;
     private Handler mDJIHandler;
     private Handler mUIHandler;
-    private Button mButtonClear;
-    private ToggleButton toggleBtnArming;
+    private SwitchCompat mSafety;
 
     private FragmentManager fragmentManager;
     private LogFragment logDJI;
@@ -127,11 +129,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (mModel != null) {
                     if (mModel.isSafetyEnabled())
-                        toggleBtnArming.setChecked(true);
+                        mSafety.setChecked(true);
                     else
-                        toggleBtnArming.setChecked(false);
+                        mSafety.setChecked(false);
                 } else
-                    toggleBtnArming.setChecked(false);
+                    mSafety.setChecked(false);
                 invalidateOptionsMenu();
             } catch (Exception e) {
                 Log.d(TAG, "exception", e);
@@ -250,32 +252,7 @@ public class MainActivity extends AppCompatActivity {
 
         requestPermissions();
 
-        mButtonClear = findViewById(R.id.button_clear);
-        toggleBtnArming = (ToggleButton) findViewById(R.id.toggBtnSafety);
-//        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-
-        mButtonClear.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                logDJI.setLogText("");
-                logFromGCS.setLogText("");
-                logToGCS.setLogText("");
-            }
-        });
-
         deleteApplicationDirectory();
-
-
-        toggleBtnArming.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    mModel.setSafetyEnabled(true);
-                    toggleBtnArming.setTextColor(Color.RED);
-                } else {
-                    mModel.setSafetyEnabled(false);
-                    toggleBtnArming.setTextColor(Color.GREEN);
-                }
-            }
-        });
 
         initLogs();
         initBottomNav();
@@ -314,6 +291,22 @@ public class MainActivity extends AppCompatActivity {
         mUIHandler = new Handler(Looper.getMainLooper());
         mUIHandler.postDelayed(RunnableUpdateUI, 1000);
 
+//        mSafety = findViewById(R.id.action_safety_switch);
+//
+//
+//
+//
+//        mSafety.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    mModel.setSafetyEnabled(true);
+//                    mSafety.setTextColor(Color.RED);
+//                } else {
+//                    mModel.setSafetyEnabled(false);
+//                    mSafety.setTextColor(Color.GREEN);
+//                }
+//            }
+//        });
         //NativeHelper.getInstance().init();
     }
 
@@ -503,8 +496,23 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.toolbar_menu, menu);
+
+
+//        mSafety = findViewById(R.id.action_safety_switch);
+//
+//        mSafety.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    mModel.setSafetyEnabled(true);
+//                } else {
+//                    mModel.setSafetyEnabled(false);
+//                }
+//            }
+//        });
 
         return true;
     }
@@ -545,6 +553,10 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "menu item selected");
         // Handle item selection
         switch (item.getItemId()) {
+            case R.id.action_safety:
+                NotificationHandler.notifySnackbar(bottomNavigationView, R.string.safety, LENGTH_LONG);
+                mModel.setSafetyEnabled(!mModel.isSafetyEnabled());
+                return true;
             case R.id.action_settings:
                 onClickSettings();
             default:
