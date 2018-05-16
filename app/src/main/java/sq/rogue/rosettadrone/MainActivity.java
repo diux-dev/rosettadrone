@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
     private BaseProduct.BaseProductListener mDJIBaseProductListener = new BaseProduct.BaseProductListener() {
         @Override
         public void onComponentChange(BaseProduct.ComponentKey key, BaseComponent oldComponent, BaseComponent newComponent) {
-            Log.d(TAG, "onComponentChange()");
+//            Log.d(TAG, "onComponentChange()");
             if (newComponent != null) {
                 newComponent.setComponentListener(mDJIComponentListener);
             }
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onConnectivityChange(boolean isConnected) {
-            Log.d(TAG, "onConnectivityChange()");
+//            Log.d(TAG, "onConnectivityChange()");
 //            logMessageDJI("onConnectivityChange()");
             if (isConnected)
                 onDroneConnected();
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
     private DJISDKManager.SDKManagerCallback mDJISDKManagerCallback = new DJISDKManager.SDKManagerCallback() {
         @Override
         public void onRegister(DJIError error) {
-            Log.d(TAG, error == null ? "success" : error.getDescription());
+//            Log.d(TAG, error == null ? "success" : error.getDescription());
             if (error == DJISDKError.REGISTRATION_SUCCESS) {
                 DJISDKManager.getInstance().startConnectionToProduct();
                 Handler handler = new Handler(Looper.getMainLooper());
@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onProductChange(BaseProduct oldProduct, BaseProduct newProduct) {
-            Log.d(TAG, "onProductChange()");
+//            Log.d(TAG, "onProductChange()");
 //            logMessageDJI("onProductChange()");
 
             mProduct = newProduct;
@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        Log.d(TAG, "onCreate()");
+//        Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -365,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void deleteApplicationDirectory() {
-        Log.d("RosettaDrone", "deleteApplicationDirectory()");
+//        Log.d("RosettaDrone", "deleteApplicationDirectory()");
         try {
             PackageInfo p = getPackageManager().getPackageInfo(getPackageName(), 0);
             String s = p.applicationInfo.dataDir;
@@ -409,13 +409,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume()");
+//        Log.d(TAG, "onResume()");
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        Log.d(TAG, "onPause()");
+//        Log.d(TAG, "onPause()");
         super.onPause();
         // We have to save text when onPause is called or it will be erased
 //        mNewOutbound = logToGCS.getLogText() + mNewOutbound;
@@ -425,13 +425,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        Log.i(TAG, "onStop");
+//        Log.i(TAG, "onStop");
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
-        Log.i(TAG, "onDestroy");
+//        Log.i(TAG, "onDestroy");
 //        logMessageDJI("onDestroy()");
         closeGCSCommunicator();
 
@@ -458,7 +458,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int reqCode, int resCode, Intent data) {
-        Log.d(TAG, "onActivityResult");
+//        Log.d(TAG, "onActivityResult");
         super.onActivityResult(reqCode, resCode, data);
         if (reqCode == RESULT_SETTINGS && mGCSCommunicator != null) {
             mGCSCommunicator.renewDatalinks();
@@ -524,37 +524,37 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(TAG, "menu item selected");
+//        Log.d(TAG, "menu item selected");
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_safety_switch:
-                Log.d(TAG, "ACTION_SAFETY_SWITCH");
+//                Log.d(TAG, "ACTION_SAFETY_SWITCH");
                 return true;
             case R.id.action_safety:
-                Log.d(TAG, "ACTION_SAFETY");
+//                Log.d(TAG, "ACTION_SAFETY");
 //                NotificationHandler.notifySnackbar(bottomNavigationView, R.string.safety, LENGTH_LONG);
                 return true;
             case R.id.action_settings:
                 onClickSettings();
             default:
-                Log.d(TAG, String.valueOf(item.getItemId()));
+//                Log.d(TAG, String.valueOf(item.getItemId()));
                 return super.onOptionsItemSelected(item);
         }
     }
 
     private void onLongClickGCSUp() {
 
-        Log.d(TAG, "onLongClickGCSUp()");
+//        Log.d(TAG, "onLongClickGCSUp()");
         mModel.startWaypointMission();
     }
 
     private void onLongClickGCSDown() {
-        Log.d(TAG, "onLongClickGCSDown()");
+//        Log.d(TAG, "onLongClickGCSDown()");
         mModel.echoLoadedMission();
     }
 
     private void onClickSettings() {
-        Log.d(TAG, "onClickSettings()");
+//        Log.d(TAG, "onClickSettings()");
         Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
         startActivityForResult(intent, RESULT_SETTINGS);
     }
@@ -601,7 +601,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void notifyStatusChange() {
         mDJIHandler.removeCallbacks(djiUpdateRunnable);
-        Log.d(TAG, "notifyStatusChange()");
+//        Log.d(TAG, "notifyStatusChange()");
         mDJIHandler.postDelayed(djiUpdateRunnable, 500);
     }
 
@@ -741,7 +741,7 @@ public class MainActivity extends AppCompatActivity {
      * @param intent
      */
     private void sendIntent(Intent intent) {
-        Log.d(TAG, "sendIntent");
+//        Log.d(TAG, "sendIntent");
         if (intent != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 try {
@@ -788,19 +788,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void renewDatalinks() {
-            Log.d(TAG, "renewDataLinks");
+//            Log.d(TAG, "renewDataLinks");
             request_renew_datalinks = true;
         }
 
         private void onRenewDatalinks() {
-            Log.d(TAG, "onRenewDataLinks");
+//            Log.d(TAG, "onRenewDataLinks");
             createTelemetrySocket();
 //            mainActivityWeakReference.get().sendRestartVideoService();
         }
 
         @Override
         protected Integer doInBackground(Integer... ints2) {
-            Log.d("RDTHREADS", "doInBackground()");
+//            Log.d("RDTHREADS", "doInBackground()");
 
             try {
                 createTelemetrySocket();
@@ -851,7 +851,7 @@ public class MainActivity extends AppCompatActivity {
                 if (timer != null) {
                     timer.cancel();
                 }
-                Log.d("RDTHREADS", "doInBackground() complete");
+//                Log.d("RDTHREADS", "doInBackground() complete");
 
             }
             return 0;
@@ -906,10 +906,10 @@ public class MainActivity extends AppCompatActivity {
                 mainActivityWeakReference.get().logMessageDJI("Unknown telemetry host: " + gcsIPString + ":" + String.valueOf(telemIPPort));
             } // TODO
 
-            Log.d(TAG, mainActivityWeakReference.get().socket.getInetAddress().toString());
-            Log.d(TAG, mainActivityWeakReference.get().socket.getLocalAddress().toString());
-            Log.d(TAG, String.valueOf(mainActivityWeakReference.get().socket.getPort()));
-            Log.d(TAG, String.valueOf(mainActivityWeakReference.get().socket.getLocalPort()));
+//            Log.d(TAG, mainActivityWeakReference.get().socket.getInetAddress().toString());
+//            Log.d(TAG, mainActivityWeakReference.get().socket.getLocalAddress().toString());
+//            Log.d(TAG, String.valueOf(mainActivityWeakReference.get().socket.getPort()));
+//            Log.d(TAG, String.valueOf(mainActivityWeakReference.get().socket.getLocalPort()));
 
             if (mainActivityWeakReference.get() != null) {
                 mainActivityWeakReference.get().mModel.setSocket(mainActivityWeakReference.get().socket);
