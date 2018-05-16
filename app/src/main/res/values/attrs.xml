@@ -3,4 +3,8 @@
     <declare-styleable name="ConnectionState">
         <attr name="connected_state" format="boolean" />
     </declare-styleable>
+    <declare-styleable name="TestState">
+        <attr name="state_zero" format="boolean" />
+        <attr name="state_one" format="boolean" />
+    </declare-styleable>
 </resources>

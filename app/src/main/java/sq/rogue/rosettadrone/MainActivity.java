@@ -6,11 +6,15 @@ package sq.rogue.rosettadrone;
 // MenuItemTetColor: RPP @ https://stackoverflow.com/questions/31713628/change-menuitem-text-color-programmatically
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,9 +25,13 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.SwitchCompat;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -310,6 +318,13 @@ public class MainActivity extends AppCompatActivity {
     private void initBottomNav() {
         bottomNavigationView = findViewById(R.id.navigationView);
 
+        /**
+         * Added two lines
+         */
+        bottomNavigationView.setItemIconTintList(null);
+        bottomNavigationView.setItemBackgroundResource(R.drawable.menubackground);
+
+
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -542,7 +557,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("ResourceAsColor")
     private void onLongClickGCSUp() {
+        /**
+         * These lines change the text color and icon color to green
+         */
+        Menu bottomNavMenu = bottomNavigationView.getMenu();
+        MenuItem gcsUp = bottomNavMenu.findItem(R.id.action_gcs_up);
+        SpannableString s = new SpannableString(gcsUp.getTitle());
+        s.setSpan(new ForegroundColorSpan(Color.GREEN), 0, s.length(), 0);
+        gcsUp.setTitle(s);
+        gcsUp.setIcon(R.drawable.ic_up_arrow_green_24dp);
+
+        //bottomNavigationView.setItemIconTintList(null);
+        //Drawable normalDrawable = gcsUp.getIcon();
+        //Drawable wrapDrawable = DrawableCompat.wrap(normalDrawable);
+        //DrawableCompat.setTint(wrapDrawable, android.R.color.holo_green_dark);
+
+       // gcsUp.setIcon(R.drawable.ic_down_arrow_white_24dp);
+
+
 
 //        Log.d(TAG, "onLongClickGCSUp()");
         mModel.startWaypointMission();
@@ -550,6 +584,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void onLongClickGCSDown() {
 //        Log.d(TAG, "onLongClickGCSDown()");
+        /**
+         * These lines change the text color and icon color back to gray
+         */
+
+
+        Menu bottomNavMenu = bottomNavigationView.getMenu();
+        MenuItem gcsUp = bottomNavMenu.findItem(R.id.action_gcs_up);
+        SpannableString s = new SpannableString(gcsUp.getTitle());
+        s.setSpan(new ForegroundColorSpan(Color.GRAY), 0, s.length(), 0);
+        gcsUp.setTitle(s);
+        gcsUp.setIcon(R.drawable.ic_up_arrow_white_24dp);
+
+
         mModel.echoLoadedMission();
     }
 
