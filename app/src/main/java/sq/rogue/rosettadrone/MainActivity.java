@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -27,6 +28,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -127,17 +130,6 @@ public class MainActivity extends AppCompatActivity {
                     logDJI.appendLogText(mNewDJI);
                     mNewDJI = "";
                 }
-                if (mModel != null) {
-                    if (mSafety == null) {
-                        mSafety = findViewById(R.id.action_safety);
-                    }
-                    if (mModel.isSafetyEnabled())
-                        mSafety.setChecked(true);
-                    else
-                        mSafety.setChecked(false);
-                } else
-                    mSafety.setChecked(false);
-                invalidateOptionsMenu();
             } catch (Exception e) {
                 Log.d(TAG, "exception", e);
             }
@@ -294,22 +286,7 @@ public class MainActivity extends AppCompatActivity {
         mUIHandler = new Handler(Looper.getMainLooper());
         mUIHandler.postDelayed(RunnableUpdateUI, 1000);
 
-//        mSafety = findViewById(R.id.action_safety_switch);
-//
-//
-//
-//
-//        mSafety.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if (isChecked) {
-//                    mModel.setSafetyEnabled(true);
-//                    mSafety.setTextColor(Color.RED);
-//                } else {
-//                    mModel.setSafetyEnabled(false);
-//                    mSafety.setTextColor(Color.GREEN);
-//                }
-//            }
-//        });
+
         //NativeHelper.getInstance().init();
     }
 
@@ -500,22 +477,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.toolbar_menu, menu);
 
+        MenuItem item = menu.findItem(R.id.action_safety);
 
-//        mSafety = findViewById(R.id.action_safety);
-//
-//        mSafety.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if (isChecked) {
-//                    mModel.setSafetyEnabled(true);
-//                } else {
-//                    mModel.setSafetyEnabled(false);
-//                }
-//            }
-//        });
+        mSafety = (SwitchCompat) item.getActionView();
+
+
+        mSafety.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mModel.setSafetyEnabled(isChecked);
+                NotificationHandler.notifySnackbar(findViewById(R.id.snack),
+                        (mModel.isSafetyEnabled()) ? R.string.safety_on : R.string.safety_off, LENGTH_LONG);
+            }
+        });
 
         return true;
     }
@@ -556,14 +532,17 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "menu item selected");
         // Handle item selection
         switch (item.getItemId()) {
+            case R.id.action_safety_switch:
+                Log.d(TAG, "ACTION_SAFETY_SWITCH");
+                return true;
             case R.id.action_safety:
-                Log.d(TAG, "TEST");
+                Log.d(TAG, "ACTION_SAFETY");
 //                NotificationHandler.notifySnackbar(bottomNavigationView, R.string.safety, LENGTH_LONG);
-                mModel.setSafetyEnabled(!mModel.isSafetyEnabled());
                 return true;
             case R.id.action_settings:
                 onClickSettings();
             default:
+                Log.d(TAG, String.valueOf(item.getItemId()));
                 return super.onOptionsItemSelected(item);
         }
     }

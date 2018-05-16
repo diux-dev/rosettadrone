@@ -37,6 +37,15 @@
         <!--android:layout_height="fill_parent"-->
         <!--android:layout_below="@id/fragment_container"/>-->
 
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/snack"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="56dp"
+        android:elevation="6dp"
+        />
+
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigationView"
         android:layout_width="0dp"
