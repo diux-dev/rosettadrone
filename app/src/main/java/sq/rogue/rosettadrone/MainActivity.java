@@ -484,6 +484,9 @@ public class MainActivity extends AppCompatActivity {
 
         mSafety = (SwitchCompat) item.getActionView();
 
+        //Make sure default is safety enabled
+        mModel.setSafetyEnabled(true);
+        mSafety.setChecked(true);
 
         mSafety.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
