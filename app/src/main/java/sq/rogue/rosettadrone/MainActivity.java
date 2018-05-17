@@ -15,11 +15,13 @@ import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -91,9 +93,11 @@ public class MainActivity extends AppCompatActivity {
 
     private FragmentManager fragmentManager;
     private LogFragment logDJI;
-    private LogFragment logToGCS;
-    private LogFragment logFromGCS;
+    private LogFragment logOutbound;
+    private LogFragment logInbound;
+
     private BottomNavigationView bottomNavigationView;
+    private int navState = -1;
 
     private SharedPreferences prefs;
 
@@ -116,21 +120,23 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
 
             try {
-                if (!mNewOutbound.equals("")) {
-                    //((LogFragment)adapter.getItem(0)).appendLogText(mNewOutbound);
-                    logToGCS.appendLogText(mNewOutbound);
-                    mNewOutbound = "";
-                }
-                if (!mNewInbound.equals("")) {
-                    //((LogFragment)adapter.getItem(1)).appendLogText(mNewOutbound);
-                    logFromGCS.appendLogText(mNewInbound);
-                    mNewInbound = "";
-                }
                 if (!mNewDJI.equals("")) {
-                    //((LogFragment)adapter.getItem(2)).appendLogText(mNewOutbound);
+//                    ((LogFragment) logPagerAdapter.getItem(0)).appendLogText(mNewDJI);
                     logDJI.appendLogText(mNewDJI);
                     mNewDJI = "";
                 }
+                if (!mNewOutbound.equals("")) {
+//                    ((LogFragment) logPagerAdapter.getItem(1)).appendLogText(mNewOutbound);
+                    logOutbound.appendLogText(mNewOutbound);
+
+                    mNewOutbound = "";
+                }
+                if (!mNewInbound.equals("")) {
+//                    ((LogFragment) logPagerAdapter.getItem(2)).appendLogText(mNewInbound);
+                    logInbound.appendLogText(mNewInbound);
+                    mNewInbound = "";
+                }
+
             } catch (Exception e) {
                 Log.d(TAG, "exception", e);
             }
@@ -250,33 +256,12 @@ public class MainActivity extends AppCompatActivity {
 
         deleteApplicationDirectory();
 
+        if (savedInstanceState != null) {
+            navState = savedInstanceState.getInt("navigation_state");
+        }
         initLogs();
         initBottomNav();
 
-//        tabLayout.removeAllTabs();
-//        tabLayout.addTab(tabLayout.newTab().setText("DJI"));
-//        tabLayout.addTab(tabLayout.newTab().setText("To GCS"));
-//        tabLayout.addTab(tabLayout.newTab().setText("From GCS"));
-//        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-//
-//
-//        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-//            @Override
-//            public void onTabSelected(TabLayout.Tab tab) {
-//                viewPager.setCurrentItem(tab.getPosition());
-//            }
-//
-//            @Override
-//            public void onTabUnselected(TabLayout.Tab tab) {
-//
-//            }
-//
-//            @Override
-//            public void onTabReselected(TabLayout.Tab tab) {
-//
-//            }
-//        });
 
 
         mModel = new DroneModel(this, null);
@@ -296,20 +281,40 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initLogs() {
         fragmentManager = getSupportFragmentManager();
+
+        //Adapters in order: DJI, Outbound to GCS, Inbound to GCS
+//        logPagerAdapter = new LogPagerAdapter(fragmentManager,
+//                new LogFragment(), new LogFragment(), new LogFragment());
+
         logDJI = new LogFragment();
-        logToGCS = new LogFragment();
-        logFromGCS = new LogFragment();
+        logOutbound = new LogFragment();
+        logInbound = new LogFragment();
+
 
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         fragmentTransaction.add(R.id.fragment_container, logDJI);
-        fragmentTransaction.add(R.id.fragment_container, logToGCS);
-        fragmentTransaction.add(R.id.fragment_container, logFromGCS);
+        fragmentTransaction.add(R.id.fragment_container, logOutbound);
+        fragmentTransaction.add(R.id.fragment_container, logInbound);
 
-        fragmentTransaction.hide(logToGCS);
-        fragmentTransaction.hide(logFromGCS);
-
+        Log.d(TAG, "initLOGS navState : " + navState);
+        switch (navState) {
+            case R.id.action_gcs_up:
+                fragmentTransaction.hide(logDJI);
+                fragmentTransaction.hide(logInbound);
+                break;
+            case R.id.action_gcs_down:
+                fragmentTransaction.hide(logDJI);
+                fragmentTransaction.hide(logOutbound);
+                break;
+            default:
+                fragmentTransaction.hide(logOutbound);
+                fragmentTransaction.hide(logInbound);
+                break;
+        }
         fragmentTransaction.commit();
+
+
     }
 
     /**
@@ -332,19 +337,20 @@ public class MainActivity extends AppCompatActivity {
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                         switch (item.getItemId()) {
                             case R.id.action_dji:
+                                Log.d(TAG, "SHOWING DJI initNAV");
                                 fragmentTransaction.show(logDJI);
-                                fragmentTransaction.hide(logToGCS);
-                                fragmentTransaction.hide(logFromGCS);
+                                fragmentTransaction.hide(logOutbound);
+                                fragmentTransaction.hide(logInbound);
                                 break;
                             case R.id.action_gcs_up:
                                 fragmentTransaction.hide(logDJI);
-                                fragmentTransaction.show(logToGCS);
-                                fragmentTransaction.hide(logFromGCS);
+                                fragmentTransaction.show(logOutbound);
+                                fragmentTransaction.hide(logInbound);
                                 break;
                             case R.id.action_gcs_down:
                                 fragmentTransaction.hide(logDJI);
-                                fragmentTransaction.hide(logToGCS);
-                                fragmentTransaction.show(logFromGCS);
+                                fragmentTransaction.hide(logOutbound);
+                                fragmentTransaction.show(logInbound);
                                 break;
                         }
                         fragmentTransaction.commit();
@@ -376,6 +382,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        if (navState != -1) {
+            bottomNavigationView.setSelectedItemId(navState);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        navState = bottomNavigationView.getSelectedItemId();
+        outState.putInt("navigation_state", navState);
+        Log.d(TAG, "SAVED NAVSTATE: " + navState);
 
     }
 
@@ -426,16 +444,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
 //        Log.d(TAG, "onResume()");
         super.onResume();
+
     }
 
     @Override
     protected void onPause() {
 //        Log.d(TAG, "onPause()");
         super.onPause();
-        // We have to save text when onPause is called or it will be erased
-//        mNewOutbound = logToGCS.getLogText() + mNewOutbound;
-//        mNewInbound = logFromGCS.getLogText() + mNewInbound;
-//        mNewDJI = logDJI.getLogText() + mNewDJI;
     }
 
     @Override
@@ -452,21 +467,6 @@ public class MainActivity extends AppCompatActivity {
 
         mUIHandler.removeCallbacksAndMessages(null);
         mDJIHandler.removeCallbacksAndMessages(null);
-
-//        if(VideoFeeder.getInstance() != null) {
-//            if(VideoFeeder.getInstance().getPrimaryVideoFeed() != null)
-//                VideoFeeder.getInstance().getPrimaryVideoFeed().setCallback(null);
-//        }
-//        mModel = null;
-
-//        try { mModel.getDjiAircraft().getRemoteController().setHardwareStateCallback(null); }
-//        catch(Exception e) {}
-//        try { mModel.getDjiAircraft().getBattery().setStateCallback(null); }
-//        catch(Exception e) {}
-//        try { Battery.setAggregationStateCallback(null); }
-//        catch(Exception e) {}
-//        try { mModel.getDjiAircraft().getBattery().getCellVoltages(null); }
-//        catch(Exception e) {}
 
         super.onDestroy();
     }

@@ -1,9 +1,13 @@
 package sq.rogue.rosettadrone.logs;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +17,10 @@ import sq.rogue.rosettadrone.R;
 
 public class LogFragment extends Fragment {
 
+    private final String TAG = getClass().getSimpleName();
+
     private final int DEFAULT_MAX_CHARACTERS = 200000;
+//    private final String INSTANCE_STATE_KEY = "saved_state";
 
     private TextView mTextViewTraffic;
     private boolean mViewAtBottom = true;
@@ -22,13 +29,18 @@ public class LogFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+//        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+//        Log.d(TAG, "onCreateView");
+        super.onCreateView(inflater, container, savedInstanceState);
+        this.setRetainInstance(true);
+
         View view = inflater.inflate(R.layout.fragment_log, container, false);
-        mTextViewTraffic = (TextView) view.findViewById(R.id.log);
+        mTextViewTraffic = view.findViewById(R.id.log);
         mTextViewTraffic.setMovementMethod(new ScrollingMovementMethod());
         mTextViewTraffic.setHorizontallyScrolling(true);
 
@@ -55,7 +67,11 @@ public class LogFragment extends Fragment {
      */
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+//        Log.d(TAG, "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
+        this.setRetainInstance(true);
+
+
 
     }
 
@@ -97,11 +113,14 @@ public class LogFragment extends Fragment {
      * scrolls to the difference.
      */
     public void scrollToBottom() {
-        final int scrollAmt = mTextViewTraffic.getLayout().getLineTop(mTextViewTraffic.getLineCount())
-                - mTextViewTraffic.getHeight();
-        if (scrollAmt > 0 && scrollAmt < 1000) {
-            mTextViewTraffic.scrollTo(0, scrollAmt);
+        if (mTextViewTraffic != null && mTextViewTraffic.getLayout() != null) {
+            final int scrollAmt = mTextViewTraffic.getLayout().getLineTop(mTextViewTraffic.getLineCount())
+                    - mTextViewTraffic.getHeight();
+            if (scrollAmt > 0 && scrollAmt < 1000) {
+                mTextViewTraffic.scrollTo(0, scrollAmt);
+            }
         }
+
 //        else {
 //            mTextViewTraffic.scrollTo(0, 0);
 //        }
