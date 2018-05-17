@@ -297,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.add(R.id.fragment_container, logOutbound);
         fragmentTransaction.add(R.id.fragment_container, logInbound);
 
-        Log.d(TAG, "initLOGS navState : " + navState);
+//        Log.d(TAG, "initLOGS navState : " + navState);
         switch (navState) {
             case R.id.action_gcs_up:
                 fragmentTransaction.hide(logDJI);
@@ -337,7 +337,6 @@ public class MainActivity extends AppCompatActivity {
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                         switch (item.getItemId()) {
                             case R.id.action_dji:
-                                Log.d(TAG, "SHOWING DJI initNAV");
                                 fragmentTransaction.show(logDJI);
                                 fragmentTransaction.hide(logOutbound);
                                 fragmentTransaction.hide(logInbound);
@@ -393,7 +392,7 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         navState = bottomNavigationView.getSelectedItemId();
         outState.putInt("navigation_state", navState);
-        Log.d(TAG, "SAVED NAVSTATE: " + navState);
+//        Log.d(TAG, "SAVED NAVSTATE: " + navState);
 
     }
 
@@ -405,7 +404,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, s);
             File dir = new File(s);
             if (dir.isDirectory()) {
-                Log.d("RosettaDrone", "yes, is directory");
+//                Log.d("RosettaDrone", "yes, is directory");
                 String[] children = dir.list();
                 for (int i = 0; i < children.length; i++) {
                     new File(dir, children[i]).delete();
