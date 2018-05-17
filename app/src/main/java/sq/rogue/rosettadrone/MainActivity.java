@@ -323,11 +323,11 @@ public class MainActivity extends AppCompatActivity {
     private void initBottomNav() {
         bottomNavigationView = findViewById(R.id.navigationView);
 
-        /**
-         * Added two lines
-         */
-        bottomNavigationView.setItemIconTintList(null);
-        bottomNavigationView.setItemBackgroundResource(R.drawable.menubackground);
+//        /**
+//         * Added two lines
+//         */
+//        bottomNavigationView.setItemIconTintList(null);
+//        bottomNavigationView.setItemBackgroundResource(R.drawable.menubackground);
 
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
@@ -406,8 +406,8 @@ public class MainActivity extends AppCompatActivity {
             if (dir.isDirectory()) {
 //                Log.d("RosettaDrone", "yes, is directory");
                 String[] children = dir.list();
-                for (int i = 0; i < children.length; i++) {
-                    new File(dir, children[i]).delete();
+                for (String aChildren : children) {
+                    new File(dir, aChildren).delete();
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {
@@ -505,7 +505,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    //TODO
 //    @Override
 //    public boolean onPrepareOptionsMenu(Menu menu) {
 //        boolean result = super.onPrepareOptionsMenu(menu);
@@ -517,19 +516,21 @@ public class MainActivity extends AppCompatActivity {
 //
 //        if (dji != null) {
 //            if (mProduct instanceof Aircraft) {
-//                dji.setEnabled(true);
+//                dji.setIcon(R.drawable.ic_drone_green_24dp);
 //            }
 //            else {
-//                dji.setEnabled(false);
+//                dji.setIcon(R.drawable.ic_drone_red_24dp);
 //            }
 //        }
 //
 //        if (gcsDown != null) {
 //            if (System.currentTimeMillis() - mMavlinkReceiver.getTimestampLastGCSHeartbeat() <= GCS_TIMEOUT_mSEC) {
-//                gcsDown.setEnabled(true);
+//                gcsUp.setIcon(R.drawable.ic_up_arrow_green_24dp);
+//                gcsDown.setIcon(R.drawable.ic_down_arrow_green_24dp);
 //            }
 //            else {
-//                gcsDown.setEnabled(false);
+//                gcsUp.setIcon(R.drawable.ic_up_arrow_red_24dp);
+//                gcsDown.setIcon(R.drawable.ic_down_arrow_red_24dp);
 //            }
 //        }
 //
@@ -558,44 +559,12 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("ResourceAsColor")
     private void onLongClickGCSUp() {
-        /**
-         * These lines change the text color and icon color to green
-         */
-        Menu bottomNavMenu = bottomNavigationView.getMenu();
-        MenuItem gcsUp = bottomNavMenu.findItem(R.id.action_gcs_up);
-        SpannableString s = new SpannableString(gcsUp.getTitle());
-        s.setSpan(new ForegroundColorSpan(Color.GREEN), 0, s.length(), 0);
-        gcsUp.setTitle(s);
-        gcsUp.setIcon(R.drawable.ic_up_arrow_green_24dp);
-
-        //bottomNavigationView.setItemIconTintList(null);
-        //Drawable normalDrawable = gcsUp.getIcon();
-        //Drawable wrapDrawable = DrawableCompat.wrap(normalDrawable);
-        //DrawableCompat.setTint(wrapDrawable, android.R.color.holo_green_dark);
-
-       // gcsUp.setIcon(R.drawable.ic_down_arrow_white_24dp);
-
-
-
 //        Log.d(TAG, "onLongClickGCSUp()");
         mModel.startWaypointMission();
     }
 
     private void onLongClickGCSDown() {
 //        Log.d(TAG, "onLongClickGCSDown()");
-        /**
-         * These lines change the text color and icon color back to gray
-         */
-
-
-        Menu bottomNavMenu = bottomNavigationView.getMenu();
-        MenuItem gcsUp = bottomNavMenu.findItem(R.id.action_gcs_up);
-        SpannableString s = new SpannableString(gcsUp.getTitle());
-        s.setSpan(new ForegroundColorSpan(Color.GRAY), 0, s.length(), 0);
-        gcsUp.setTitle(s);
-        gcsUp.setIcon(R.drawable.ic_up_arrow_white_24dp);
-
-
         mModel.echoLoadedMission();
     }
 
@@ -776,9 +745,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, VideoService.class);
         intent.setAction(action);
 
-        for (Object extra : extras) {
-//            intent.putExtra()
-        }
+//        for (Object extra : extras) {
+//            intent.putExtra(extra);
+//        }
 
         return intent;
     }
