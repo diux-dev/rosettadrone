@@ -31,6 +31,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
@@ -75,12 +76,14 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String FLAG_CONNECTION_CHANGE = "dji_sdk_connection_change";
     private final static int RESULT_SETTINGS = 1001;
+    public static boolean FLAG_PREFS_CHANGED = false;
+
     private static BaseProduct mProduct;
     private final String TAG = "RosettaDrone";
     private final int GCS_TIMEOUT_mSEC = 2000;
     private Handler mDJIHandler;
     private Handler mUIHandler;
-    private SwitchCompat mSafety;
+    private CheckBox mSafety;
 
     private FragmentManager fragmentManager;
     private LogFragment logDJI;
@@ -464,9 +467,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int reqCode, int resCode, Intent data) {
 //        Log.d(TAG, "onActivityResult");
         super.onActivityResult(reqCode, resCode, data);
-        if (reqCode == RESULT_SETTINGS && mGCSCommunicator != null) {
+        if (reqCode == RESULT_SETTINGS && mGCSCommunicator != null && FLAG_PREFS_CHANGED) {
             mGCSCommunicator.renewDatalinks();
             sendRestartVideoService();
+            FLAG_PREFS_CHANGED = false;
         }
     }
 
@@ -476,9 +480,13 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.toolbar_menu, menu);
 
-        MenuItem item = menu.findItem(R.id.action_safety);
-
-        mSafety = (SwitchCompat) item.getActionView();
+        MenuItem safetyItem = menu.findItem(R.id.action_safety);
+        mSafety = (CheckBox) safetyItem.getActionView();
+        mSafety.setButtonDrawable(R.color.safety);
+        mSafety.setPadding(mSafety.getPaddingLeft(),
+                mSafety.getPaddingTop(),
+                mSafety.getPaddingLeft() + (int)(10.0f * getResources().getDisplayMetrics().density + 0.5f),
+                mSafety.getPaddingBottom());
 
         //Make sure default is safety enabled
         mModel.setSafetyEnabled(true);
