@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -265,8 +266,16 @@ public class MainActivity extends AppCompatActivity {
         mUIHandler = new Handler(Looper.getMainLooper());
         mUIHandler.postDelayed(RunnableUpdateUI, 1000);
 
+        Intent aoaIntent = getIntent();
+        if (aoaIntent != null) {
+            String action = aoaIntent.getAction();
+            if (action == (UsbManager.ACTION_USB_ACCESSORY_ATTACHED)) {
+                Intent attachedIntent = new Intent();
 
-        //NativeHelper.getInstance().init();
+                attachedIntent.setAction(DJISDKManager.USB_ACCESSORY_ATTACHED);
+                sendBroadcast(attachedIntent);
+            }
+        }
     }
 
     /**
