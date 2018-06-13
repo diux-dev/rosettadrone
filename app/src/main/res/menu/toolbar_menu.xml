@@ -16,6 +16,6 @@
         android:orderInCategory="400"
         app:showAsAction="ifRoom"
         android:title="@string/settings"
-        android:icon="@drawable/ic_settings_black_24dp" />
+        android:icon="@drawable/ic_outline_settings_24dp" />
 
 </menu>
