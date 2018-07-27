@@ -23,12 +23,23 @@ import static sq.rogue.rosettadrone.util.TYPE_VIDEO_PORT;
 // Display value of preference in summary field
 
 public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private static final String TAG = SettingsFragment.class.getSimpleName();
+    protected static final String PAGE_ID = "settings";
+
     SharedPreferences sharedPreferences;
+
+
+    public static SettingsFragment newInstance(String pageId) {
+        SettingsFragment settingsFragment = new SettingsFragment();
+        Bundle args = new Bundle();
+        args.putString(PAGE_ID, pageId);
+        settingsFragment.setArguments(args);
+        return (settingsFragment);
+    }
 
     /**
      * @param savedInstanceState Any saved state we are bringing into the new fragment instance
      **/
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

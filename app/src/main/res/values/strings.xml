@@ -28,7 +28,8 @@
     <string name="safety_off">SAFETY DISABLED - Ready to fly</string>
 
     <string name="settings">Settings</string>
-    <string name="drone_settings">Drone</string>
+    <string name="drone_settings">Drone Configuration</string>
+
     <string name="telemetry_settings">Telemetry</string>
     <string name="video_settings">Video</string>
     <string name="log_settings">Logs</string>

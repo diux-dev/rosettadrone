@@ -336,6 +336,7 @@ public class MAVLinkReceiver {
         parent.logMessageDJI("Speed for mission will be " + mBuilder.getAutoFlightSpeed() + " m/s");
         parent.logMessageDJI("==============================");
         mBuilder.waypointList(dji_wps).waypointCount(dji_wps.size());
-        mModel.setWaypointMission(mBuilder.build());
+        WaypointMission builtMission = mBuilder.build();
+        mModel.setWaypointMission(builtMission);
     }
 }
