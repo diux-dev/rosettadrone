@@ -4,11 +4,6 @@
     android:key="main_prefs"
     android:title="@string/settings">
 
-    <android.support.v7.preference.SwitchPreferenceCompat
-        android:defaultValue="false"
-        android:key="pref_external_gcs"
-        android:title="@string/pref_remote_gcs" />
-
     <android.support.v7.preference.PreferenceScreen
         android:key="drone_prefs"
         android:title="@string/drone_settings">
@@ -45,6 +40,12 @@
             android:defaultValue="true" />
 
     </android.support.v7.preference.PreferenceScreen>
+
+    <android.support.v7.preference.SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:key="pref_external_gcs"
+        android:title="@string/pref_remote_gcs" />
+
     <!--<PreferenceCategory-->
     <!--android:key="drone_prefs"-->
     <!--android:title="@string/drone_settings">-->

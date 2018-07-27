@@ -13,8 +13,6 @@ import sq.rogue.rosettadrone.MainActivity;
 import sq.rogue.rosettadrone.NotificationHandler;
 import sq.rogue.rosettadrone.R;
 
-import static sq.rogue.rosettadrone.util.TYPE_DRONE_ID;
-import static sq.rogue.rosettadrone.util.TYPE_DRONE_RTL_ALTITUDE;
 import static sq.rogue.rosettadrone.util.TYPE_GCS_IP;
 import static sq.rogue.rosettadrone.util.TYPE_GCS_PORT;
 import static sq.rogue.rosettadrone.util.TYPE_VIDEO_IP;
@@ -44,14 +42,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sharedPreferences = getPreferenceManager().getSharedPreferences();
-//        for (Map.Entry<String, ?> preferenceEntry : sharedPreferences.getAll().entrySet()) {
-//            Preference preference = (Preference) preferenceEntry.getValue();
-//            if (preference instanceof EditTextPreference) {
-//                addValidator(preference);
-//            } else {
-//
-//            }
-//        }
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -61,43 +51,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
      */
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        addPreferencesFromResource(R.xml.preferences);
+        setPreferencesFromResource(R.xml.preferences, rootKey);
         setListeners();
     }
 
     public void setListeners() {
-        findPreference("pref_drone_id").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-
-                try {
-                    if (Integer.parseInt((String) newValue) >= 1 && Integer.parseInt((String) newValue) <= 254) {
-                        MainActivity.FLAG_PREFS_CHANGED = true;
-                        return true;
-                    }
-                } catch (NumberFormatException ignored) {
-                }
-                NotificationHandler.notifyAlert(SettingsFragment.this.getActivity(), TYPE_DRONE_ID,
-                        null, null);
-                return false;
-            }
-        });
-        findPreference("pref_drone_rtl_altitude").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-
-                try {
-                    if (Integer.parseInt((String) newValue) >= 20 && Integer.parseInt((String) newValue) <= 500) {
-                        MainActivity.FLAG_PREFS_CHANGED = true;
-                        return true;
-                    }
-                } catch (NumberFormatException ignored) {
-                }
-                NotificationHandler.notifyAlert(SettingsFragment.this.getActivity(), TYPE_DRONE_RTL_ALTITUDE,
-                        null, null);
-                return false;
-            }
-        });
         findPreference("pref_external_gcs").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -226,16 +184,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-//        switch (key) {
-//            case "pref_gcs_ip":
-//                break;
-//            case "pref_telem_port":
-//                break;
-//            case "pref_video_port":
-//                break;
-//            default:
-//                break;
-//        }
         updatePreference(findPreference(key));
     }
 
