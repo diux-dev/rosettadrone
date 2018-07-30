@@ -558,7 +558,11 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(reqCode, resCode, data);
         if (reqCode == RESULT_SETTINGS && mGCSCommunicator != null && FLAG_PREFS_CHANGED) {
             mGCSCommunicator.renewDatalinks();
-            sendRestartVideoService();
+            if (prefs.getBoolean("pref_enable_video", false)) {
+                sendRestartVideoService();
+            } else {
+                sendDroneDisconnected();
+            }
             mModel.setSystemId(Integer.parseInt(prefs.getString("pref_drone_id", "1")));
             mModel.setRTLAltitude(Integer.parseInt(prefs.getString("pref_drone_rtl_altitude", "60")));
             FLAG_PREFS_CHANGED = false;
@@ -695,7 +699,11 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        sendDroneConnected();
+        if (prefs.getBoolean("pref_enable_video", false)) {
+            sendDroneConnected();
+        } else {
+            sendDroneDisconnected();
+        }
 
     }
 
@@ -788,6 +796,7 @@ public class MainActivity extends AppCompatActivity {
 
         logMessageDJI("Restarting Video link to " + videoIP + ":" + videoPort);
         Intent intent = setupIntent(ACTION_RESTART);
+        intent.putExtra("model", mProduct.getModel());
         sendIntent(intent);
     }
 

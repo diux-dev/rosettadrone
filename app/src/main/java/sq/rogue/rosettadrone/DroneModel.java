@@ -987,6 +987,7 @@ public class DroneModel implements CommonCallbacks.CompletionCallback {
 
         if (isSafetyEnabled()) {
             parent.logMessageDJI(parent.getResources().getString(R.string.safety_launch));
+            send_command_ack(MAV_CMD_NAV_TAKEOFF, MAV_RESULT.MAV_RESULT_DENIED);
             return;
         }
 
@@ -1063,6 +1064,7 @@ public class DroneModel implements CommonCallbacks.CompletionCallback {
     public void resumeWaypointMission() {
         if (isSafetyEnabled()) {
             parent.logMessageDJI(parent.getResources().getString(R.string.safety_launch));
+            send_command_ack(MAV_CMD_NAV_TAKEOFF, MAV_RESULT.MAV_RESULT_DENIED);
             return;
         }
 
