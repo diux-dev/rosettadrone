@@ -78,8 +78,13 @@
         android:title="@string/video_settings">
 
         <android.support.v7.preference.SwitchPreferenceCompat
+            android:key="pref_enable_video"
+            android:title="@string/pref_enable_video"
+            android:defaultValue="true" />
+
+        <android.support.v7.preference.SwitchPreferenceCompat
             android:key="pref_combined_gcs"
-            android:dependency="pref_external_gcs"
+            android:dependency="pref_enable_video"
             android:title="@string/pref_combined_gcs"
             android:defaultValue="false" />
         <android.support.v7.preference.EditTextPreference
@@ -91,6 +96,7 @@
             android:title="@string/pref_video_ip" />
         <android.support.v7.preference.EditTextPreference
             android:defaultValue="5600"
+            android:dependency="pref_enable_video"
             android:key="pref_video_port"
             android:numeric="integer"
             android:title="@string/pref_video_port" />

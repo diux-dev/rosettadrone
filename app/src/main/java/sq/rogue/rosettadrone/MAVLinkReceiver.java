@@ -90,6 +90,11 @@ public class MAVLinkReceiver {
                     return;
                 }
 
+                if (mModel.isSafetyEnabled()) {
+                    parent.logMessageDJI(parent.getResources().getString(R.string.safety_launch));
+                    return;
+                }
+
                 switch (msg_cmd.command) {
                     case MAV_CMD_COMPONENT_ARM_DISARM:
                         if (msg_cmd.param1 == 1)

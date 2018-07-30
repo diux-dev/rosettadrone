@@ -984,6 +984,12 @@ public class DroneModel implements CommonCallbacks.CompletionCallback {
     }
 
     public void startWaypointMission() {
+
+        if (isSafetyEnabled()) {
+            parent.logMessageDJI(parent.getResources().getString(R.string.safety_launch));
+            return;
+        }
+
         if (getWaypointMissionOperator() == null) {
             parent.logMessageDJI("start WaypointMission() - WaypointMissionOperator null");
             return;
@@ -1055,6 +1061,11 @@ public class DroneModel implements CommonCallbacks.CompletionCallback {
     }
 
     public void resumeWaypointMission() {
+        if (isSafetyEnabled()) {
+            parent.logMessageDJI(parent.getResources().getString(R.string.safety_launch));
+            return;
+        }
+
         if (getWaypointMissionOperator() == null) {
             parent.logMessageDJI("resumeWaypointMission() - mWaypointMissionOperator null");
             return;
