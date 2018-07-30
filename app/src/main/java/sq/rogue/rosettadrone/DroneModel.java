@@ -1091,7 +1091,7 @@ public class DroneModel implements CommonCallbacks.CompletionCallback {
 
     public void do_takeoff() {
         if (mSafetyEnabled) {
-            parent.logMessageDJI("You must turn off safety_layout to takeoff");
+            parent.logMessageDJI(parent.getResources().getString(R.string.safety_launch));
             send_command_ack(MAV_CMD_NAV_TAKEOFF, MAV_RESULT.MAV_RESULT_DENIED);
             return;
         }
