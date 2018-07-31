@@ -35,8 +35,8 @@
 
                 <ImageView
                     android:id="@+id/dji_conn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:layout_below="@+id/toolbar"
                     android:foreground="@drawable/ic_outline_disconnected_24px"
                     app:layout_collapseMode="parallax"
@@ -52,8 +52,8 @@
 
                 <ImageView
                     android:id="@+id/gcs_conn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:layout_below="@+id/toolbar"
                     android:foreground="@drawable/ic_outline_disconnected_24px"
                     app:layout_collapseMode="parallax"

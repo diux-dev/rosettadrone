@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -35,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.MAVLink.MAVLinkPacket;
@@ -679,6 +681,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+
         mGCSCommunicator = new GCSCommunicatorAsyncTask(this);
         mGCSCommunicator.execute();
 
@@ -699,6 +702,18 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        final Drawable connectedDrawable = getResources().getDrawable(R.drawable.ic_baseline_connected_24px);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ImageView imageView = findViewById(R.id.dji_conn);
+//                imageView.setImageResource(R.drawable.ic_baseline_connected_24px);
+                imageView.setForeground(connectedDrawable);
+                imageView.invalidate();
+            }
+        });
+
         if (prefs.getBoolean("pref_enable_video", false)) {
             sendDroneConnected();
         } else {
@@ -708,6 +723,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onDroneDisconnected() {
+
+        final Drawable disconnectedDrawable = getResources().getDrawable(R.drawable.ic_outline_disconnected_24px);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ImageView imageView = findViewById(R.id.dji_conn);
+//                imageView.setImageResource(R.drawable.ic_baseline_connected_24px);
+                imageView.setForeground(disconnectedDrawable);
+                imageView.invalidate();
+            }
+        });
+
+
         logMessageDJI("Drone disconnected");
         mModel.setDjiAircraft(null);
         closeGCSCommunicator();
