@@ -1071,6 +1071,19 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onCancelled(Integer result) {
             super.onCancelled();
+
+            close();
+
+            final Drawable disconnectedDrawable = mainActivityWeakReference.get().getResources().getDrawable(R.drawable.ic_outline_disconnected_24px);
+
+            mainActivityWeakReference.get().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ImageView imageView = mainActivityWeakReference.get().findViewById(R.id.gcs_conn);
+                    imageView.setForeground(disconnectedDrawable);
+                    imageView.invalidate();
+                }
+            });
         }
 
         @Override
