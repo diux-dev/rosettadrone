@@ -985,12 +985,6 @@ public class DroneModel implements CommonCallbacks.CompletionCallback {
 
     public void startWaypointMission() {
 
-        if (isSafetyEnabled()) {
-            parent.logMessageDJI(parent.getResources().getString(R.string.safety_launch));
-            send_command_ack(MAV_CMD_NAV_TAKEOFF, MAV_RESULT.MAV_RESULT_DENIED);
-            return;
-        }
-
         if (getWaypointMissionOperator() == null) {
             parent.logMessageDJI("start WaypointMission() - WaypointMissionOperator null");
             return;
