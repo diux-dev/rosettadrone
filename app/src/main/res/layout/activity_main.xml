@@ -35,8 +35,8 @@
 
                 <ImageView
                     android:id="@+id/dji_conn"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_below="@+id/toolbar"
                     android:foreground="@drawable/ic_outline_disconnected_24px"
                     app:layout_collapseMode="parallax"
@@ -46,14 +46,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="DJI"
+                    android:text="@string/dji"
                     android:paddingStart="5dp"
                     android:paddingEnd="20dp" />
 
                 <ImageView
                     android:id="@+id/gcs_conn"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_below="@+id/toolbar"
                     android:foreground="@drawable/ic_outline_disconnected_24px"
                     app:layout_collapseMode="parallax"
@@ -63,9 +63,18 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="GCS"
+                    android:text="@string/gcs"
                     android:paddingStart="5dp"
                     android:paddingEnd="20dp" />
+
+                <ImageView
+                    android:id="@+id/indicator_bar_arrow"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_below="@+id/toolbar"
+                    android:foreground="@drawable/ic_arrow_down_indicator_24dp"
+                    app:layout_collapseMode="parallax"
+                    android:layout_gravity="end" />
 
             </android.support.v7.widget.Toolbar>
 

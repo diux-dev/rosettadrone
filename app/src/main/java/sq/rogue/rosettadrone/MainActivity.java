@@ -112,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
     private MAVLinkReceiver mMavlinkReceiver;
     private Parser mMavlinkParser;
     private GCSCommunicatorAsyncTask mGCSCommunicator;
+    private boolean connectivityHasChanged = false;
+    private boolean shouldConnect = false;
 
     private Runnable RunnableUpdateUI = new Runnable() {
         // We have to update UI from here because we can't update the UI from the
@@ -702,6 +704,13 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+
+        if (prefs.getBoolean("pref_enable_video", false)) {
+            sendDroneConnected();
+        } else {
+            sendDroneDisconnected();
+        }
+
         final Drawable connectedDrawable = getResources().getDrawable(R.drawable.ic_baseline_connected_24px);
 
         runOnUiThread(new Runnable() {
@@ -713,12 +722,6 @@ public class MainActivity extends AppCompatActivity {
                 imageView.invalidate();
             }
         });
-
-        if (prefs.getBoolean("pref_enable_video", false)) {
-            sendDroneConnected();
-        } else {
-            sendDroneDisconnected();
-        }
 
     }
 
@@ -971,8 +974,49 @@ public class MainActivity extends AppCompatActivity {
                         if (request_renew_datalinks) {
                             request_renew_datalinks = false;
                             onRenewDatalinks();
-
                         }
+
+                        if (System.currentTimeMillis() - mainActivityWeakReference.get().mMavlinkReceiver.getTimestampLastGCSHeartbeat() <= mainActivityWeakReference.get().GCS_TIMEOUT_mSEC) {
+                            if (!mainActivityWeakReference.get().shouldConnect) {
+                                mainActivityWeakReference.get().shouldConnect = true;
+                                mainActivityWeakReference.get().connectivityHasChanged = true;
+                            }
+                        } else {
+                            if (mainActivityWeakReference.get().shouldConnect) {
+                                mainActivityWeakReference.get().shouldConnect = false;
+                                mainActivityWeakReference.get().connectivityHasChanged = true;
+                            }
+                        }
+
+                        if (mainActivityWeakReference.get().connectivityHasChanged) {
+
+                            if (mainActivityWeakReference.get().shouldConnect) {
+                                final Drawable connectedDrawable = mainActivityWeakReference.get().getResources().getDrawable(R.drawable.ic_baseline_connected_24px);
+
+                                mainActivityWeakReference.get().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ImageView imageView = mainActivityWeakReference.get().findViewById(R.id.gcs_conn);
+                                        imageView.setForeground(connectedDrawable);
+                                        imageView.invalidate();
+                                    }
+                                });
+                            } else {
+                                final Drawable disconnectedDrawable = mainActivityWeakReference.get().getResources().getDrawable(R.drawable.ic_outline_disconnected_24px);
+
+                                mainActivityWeakReference.get().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ImageView imageView = mainActivityWeakReference.get().findViewById(R.id.gcs_conn);
+                                        imageView.setForeground(disconnectedDrawable);
+                                        imageView.invalidate();
+                                    }
+                                });
+                            }
+
+                            mainActivityWeakReference.get().connectivityHasChanged = false;
+                        }
+
                         byte[] buf = new byte[1000];
                         DatagramPacket dp = new DatagramPacket(buf, buf.length);
                         mainActivityWeakReference.get().socket.receive(dp);
