@@ -660,7 +660,7 @@ public class MainActivity extends AppCompatActivity {
 //                NotificationHandler.notifySnackbar(bottomNavigationView, R.string.safety, LENGTH_LONG);
                 return true;
             case R.id.action_clear_logs:
-                onClickSettings();
+                onClickClearLogs();
                 break;
             case R.id.action_download_logs:
                 onClickDownloadLogs();
@@ -694,6 +694,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onClickClearLogs() {
+        logDJI.clearLogText();
+        logOutbound.clearLogText();
+        logInbound.clearLogText();
     }
 
     private void onClickDownloadLogs() {
