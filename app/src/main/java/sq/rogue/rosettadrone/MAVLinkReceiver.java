@@ -90,6 +90,11 @@ public class MAVLinkReceiver {
                     return;
                 }
 
+//                if (mModel.isSafetyEnabled()) {
+//                    parent.logMessageDJI(parent.getResources().getString(R.string.safety_launch));
+//                    return;
+//                }
+
                 switch (msg_cmd.command) {
                     case MAV_CMD_COMPONENT_ARM_DISARM:
                         if (msg_cmd.param1 == 1)
@@ -336,6 +341,7 @@ public class MAVLinkReceiver {
         parent.logMessageDJI("Speed for mission will be " + mBuilder.getAutoFlightSpeed() + " m/s");
         parent.logMessageDJI("==============================");
         mBuilder.waypointList(dji_wps).waypointCount(dji_wps.size());
-        mModel.setWaypointMission(mBuilder.build());
+        WaypointMission builtMission = mBuilder.build();
+        mModel.setWaypointMission(builtMission);
     }
 }

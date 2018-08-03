@@ -6,12 +6,12 @@ package sq.rogue.rosettadrone;
 // MenuItemTetColor: RPP @ https://stackoverflow.com/questions/31713628/change-menuitem-text-color-programmatically
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -21,7 +21,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -35,15 +34,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.Parser;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,8 +58,11 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import dji.common.error.DJIError;
 import dji.common.error.DJISDKError;
@@ -96,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView mBottomNavigation;
     private int navState = -1;
-    private FloatingActionButton mFab;
 
     private SharedPreferences prefs;
 
@@ -110,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
     private MAVLinkReceiver mMavlinkReceiver;
     private Parser mMavlinkParser;
     private GCSCommunicatorAsyncTask mGCSCommunicator;
+    private boolean connectivityHasChanged = false;
+    private boolean shouldConnect = false;
 
     private Runnable RunnableUpdateUI = new Runnable() {
         // We have to update UI from here because we can't update the UI from the
@@ -260,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
         }
         initLogs();
         initBottomNav();
-        initFab();
+//        initFab();
 
 
         mModel = new DroneModel(this, null);
@@ -396,77 +404,86 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initFab() {
-        mFab = findViewById(R.id.fab);
+    private void downloadLogs() {
+        BufferedWriter bufferedWriter = null;
 
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String fileName;
-                int dataID;
-                switch (mBottomNavigation.getSelectedItemId()) {
-                    case R.id.action_gcs_up:
-                        fileName = android.text.format.DateFormat.format("yyyy-MM-dd-hh:mm:ss", new java.util.Date())
-                        + "_gcs_up.txt";
-                        dataID = 1;
-                        break;
-                    case R.id.action_gcs_down:
-                        fileName = android.text.format.DateFormat.format("yyyy-MM-dd-hh:mm:ss", new java.util.Date())
-                                + "_gcs_down.txt";
-                        dataID = 2;
-                        break;
-                    default:
-                        fileName = android.text.format.DateFormat.format("yyyy-MM-dd-hh:mm:ss", new java.util.Date())
-                                + "_dji.txt";
-                        dataID = 0;
-                        break;
-                }
+        try {
+            final int BUF_LEN = 2048;
+            byte[] buffer = new byte[BUF_LEN];
 
-                File directory = new File(Environment.getExternalStorageDirectory().getPath()
-                        + File.separator + "rosettadrone");
-                File dataFile = new File(directory, fileName);
+            String zipName = "RD_LOG_" + android.text.format.DateFormat.format("yyyy-MM-dd-hh:mm:ss", new java.util.Date());
 
-                if (!directory.exists()) {
-                    directory.mkdir();
-                }
+            String[] fileNames = {"DJI_LOG", "OUTBOUND_LOG", "INBOUND_LOG"};
 
-                BufferedWriter bufferedWriter = null;
-                try {
-                    bufferedWriter = new BufferedWriter(new FileWriter(dataFile, false));
-                    switch (dataID) {
-                        case 0:
-                            bufferedWriter.write(logDJI.getLogText());
-                            Log.d(TAG, "LOG DJI");
-                            break;
-                        case 1:
-                            bufferedWriter.write(logOutbound.getLogText());
-                            Log.d(TAG, "LOG UP");
+            File directory = new File(Environment.getExternalStorageDirectory().getPath()
+                    + File.separator + "RosettaDrone");
+            File dataFile = new File(directory, zipName);
 
-                            break;
-                        case 2:
-                            bufferedWriter.write(logInbound.getLogText());
-                            Log.d(TAG, "LOG DOWN");
+            if (!directory.exists()) {
+                directory.mkdir();
+            }
 
-                            break;
-                        default:
-                            break;
+            ArrayList<File> files = new ArrayList<>(fileNames.length);
+            for (String fileName : fileNames) {
+                files.add(new File(directory, fileName));
+            }
+
+            try {
+                for (File file : files) {
+                    bufferedWriter = new BufferedWriter(new FileWriter(file, false));
+                    if (file.getName().equals("DJI_LOG")) {
+                        bufferedWriter.write(logDJI.getLogText());
+                    } else if (file.getName().equals("OUTBOUND_LOG")) {
+                        bufferedWriter.write(logOutbound.getLogText());
+
+                    } else {
+                        bufferedWriter.write(logInbound.getLogText());
                     }
-                    Log.d(TAG, logDJI.getLogText());
-                    Log.d(TAG, directory.getAbsolutePath());
+                    bufferedWriter.flush();
+                }
+            } finally {
+                try {
+                    if (bufferedWriter != null) {
+                        bufferedWriter.close();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
-                } finally {
-                    try {
-                        if (bufferedWriter != null) {
-                            bufferedWriter.flush();
-                            bufferedWriter.close();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
-        });
+
+
+            BufferedInputStream origin;
+            FileOutputStream dest = new FileOutputStream(dataFile);
+
+            ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
+
+            for (int i = 0; i < files.size(); i++) {
+                Log.v("Compress", "Adding: " + files.get(i));
+                FileInputStream fi = new FileInputStream(files.get(i));
+                origin = new BufferedInputStream(fi, BUF_LEN);
+                ZipEntry entry = null;
+                if (i == 0) {
+                    entry = new ZipEntry("DJI_LOG");
+                } else if (i == 1) {
+                    entry = new ZipEntry("OUTBOUND_LOG");
+                } else {
+                    entry = new ZipEntry("INBOUND_LOG");
+                }
+                out.putNextEntry(entry);
+                int count;
+                while ((count = origin.read(buffer, 0, BUF_LEN)) != -1) {
+                    out.write(buffer, 0, count);
+                }
+                origin.close();
+            }
+
+            out.finish();
+            out.close();
+
+
+        } catch (IOException e) {
+            Log.e(TAG, "ERROR ZIPPING LOGS", e);
+        }
     }
 
     @Override
@@ -558,7 +575,11 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(reqCode, resCode, data);
         if (reqCode == RESULT_SETTINGS && mGCSCommunicator != null && FLAG_PREFS_CHANGED) {
             mGCSCommunicator.renewDatalinks();
-            sendRestartVideoService();
+            if (prefs.getBoolean("pref_enable_video", false)) {
+                sendRestartVideoService();
+            } else {
+                sendDroneDisconnected();
+            }
             mModel.setSystemId(Integer.parseInt(prefs.getString("pref_drone_id", "1")));
             mModel.setRTLAltitude(Integer.parseInt(prefs.getString("pref_drone_rtl_altitude", "60")));
             FLAG_PREFS_CHANGED = false;
@@ -638,15 +659,24 @@ public class MainActivity extends AppCompatActivity {
 //                Log.d(TAG, "ACTION_SAFETY");
 //                NotificationHandler.notifySnackbar(bottomNavigationView, R.string.safety, LENGTH_LONG);
                 return true;
+            case R.id.action_clear_logs:
+                onClickClearLogs();
+                break;
+            case R.id.action_download_logs:
+                onClickDownloadLogs();
+                break;
             case R.id.action_settings:
                 onClickSettings();
+                break;
+            case R.id.action_help:
+                break;
             default:
 //                Log.d(TAG, String.valueOf(item.getItemId()));
                 return super.onOptionsItemSelected(item);
         }
+        return true;
     }
 
-    @SuppressLint("ResourceAsColor")
     private void onLongClickGCSUp() {
 //        Log.d(TAG, "onLongClickGCSUp()");
         mModel.startWaypointMission();
@@ -663,6 +693,16 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, RESULT_SETTINGS);
     }
 
+    private void onClickClearLogs() {
+        logDJI.clearLogText();
+        logOutbound.clearLogText();
+        logInbound.clearLogText();
+    }
+
+    private void onClickDownloadLogs() {
+        downloadLogs();
+    }
+
     private void onDroneConnected() {
 
         if (mProduct.getModel() == null) {
@@ -674,6 +714,7 @@ public class MainActivity extends AppCompatActivity {
             logMessageDJI("Reconnect your android device to the RC for full functionality.");
             return;
         }
+
 
         mGCSCommunicator = new GCSCommunicatorAsyncTask(this);
         mGCSCommunicator.execute();
@@ -695,11 +736,42 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        sendDroneConnected();
+
+        if (prefs.getBoolean("pref_enable_video", false)) {
+            sendDroneConnected();
+        } else {
+            sendDroneDisconnected();
+        }
+
+        final Drawable connectedDrawable = getResources().getDrawable(R.drawable.ic_baseline_connected_24px);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ImageView imageView = findViewById(R.id.dji_conn);
+//                imageView.setImageResource(R.drawable.ic_baseline_connected_24px);
+                imageView.setForeground(connectedDrawable);
+                imageView.invalidate();
+            }
+        });
 
     }
 
     private void onDroneDisconnected() {
+
+        final Drawable disconnectedDrawable = getResources().getDrawable(R.drawable.ic_outline_disconnected_24px);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ImageView imageView = findViewById(R.id.dji_conn);
+//                imageView.setImageResource(R.drawable.ic_baseline_connected_24px);
+                imageView.setForeground(disconnectedDrawable);
+                imageView.invalidate();
+            }
+        });
+
+
         logMessageDJI("Drone disconnected");
         mModel.setDjiAircraft(null);
         closeGCSCommunicator();
@@ -788,6 +860,7 @@ public class MainActivity extends AppCompatActivity {
 
         logMessageDJI("Restarting Video link to " + videoIP + ":" + videoPort);
         Intent intent = setupIntent(ACTION_RESTART);
+        intent.putExtra("model", mProduct.getModel());
         sendIntent(intent);
     }
 
@@ -933,8 +1006,49 @@ public class MainActivity extends AppCompatActivity {
                         if (request_renew_datalinks) {
                             request_renew_datalinks = false;
                             onRenewDatalinks();
-
                         }
+
+                        if (System.currentTimeMillis() - mainActivityWeakReference.get().mMavlinkReceiver.getTimestampLastGCSHeartbeat() <= mainActivityWeakReference.get().GCS_TIMEOUT_mSEC) {
+                            if (!mainActivityWeakReference.get().shouldConnect) {
+                                mainActivityWeakReference.get().shouldConnect = true;
+                                mainActivityWeakReference.get().connectivityHasChanged = true;
+                            }
+                        } else {
+                            if (mainActivityWeakReference.get().shouldConnect) {
+                                mainActivityWeakReference.get().shouldConnect = false;
+                                mainActivityWeakReference.get().connectivityHasChanged = true;
+                            }
+                        }
+
+                        if (mainActivityWeakReference.get().connectivityHasChanged) {
+
+                            if (mainActivityWeakReference.get().shouldConnect) {
+                                final Drawable connectedDrawable = mainActivityWeakReference.get().getResources().getDrawable(R.drawable.ic_baseline_connected_24px);
+
+                                mainActivityWeakReference.get().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ImageView imageView = mainActivityWeakReference.get().findViewById(R.id.gcs_conn);
+                                        imageView.setForeground(connectedDrawable);
+                                        imageView.invalidate();
+                                    }
+                                });
+                            } else {
+                                final Drawable disconnectedDrawable = mainActivityWeakReference.get().getResources().getDrawable(R.drawable.ic_outline_disconnected_24px);
+
+                                mainActivityWeakReference.get().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ImageView imageView = mainActivityWeakReference.get().findViewById(R.id.gcs_conn);
+                                        imageView.setForeground(disconnectedDrawable);
+                                        imageView.invalidate();
+                                    }
+                                });
+                            }
+
+                            mainActivityWeakReference.get().connectivityHasChanged = false;
+                        }
+
                         byte[] buf = new byte[1000];
                         DatagramPacket dp = new DatagramPacket(buf, buf.length);
                         mainActivityWeakReference.get().socket.receive(dp);
@@ -989,6 +1103,19 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onCancelled(Integer result) {
             super.onCancelled();
+
+            close();
+
+            final Drawable disconnectedDrawable = mainActivityWeakReference.get().getResources().getDrawable(R.drawable.ic_outline_disconnected_24px);
+
+            mainActivityWeakReference.get().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ImageView imageView = mainActivityWeakReference.get().findViewById(R.id.gcs_conn);
+                    imageView.setForeground(disconnectedDrawable);
+                    imageView.invalidate();
+                }
+            });
         }
 
         @Override

@@ -85,6 +85,10 @@ public class VideoService extends Service implements DJIVideoStreamDecoder.IYuvD
                     case ACTION_RESTART:
                         if (isRunning) {
                             setActionDroneDisconnected();
+                            mModel = (Model) intent.getSerializableExtra("model");
+                            spinThread();
+                        } else {
+                            mModel = (Model) intent.getSerializableExtra("model");
                             spinThread();
                         }
                         break;

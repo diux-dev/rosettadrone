@@ -193,7 +193,8 @@ public class DroneModel implements CommonCallbacks.CompletionCallback {
                                 if (getWaypointMissionOperator().getCurrentState() == WaypointMissionState.READY_TO_EXECUTE)
                                     parent.logMessageDJI("Mission uploaded and ready to execute!");
                                 else
-                                    parent.logMessageDJI("Error uploading waypoint mission to drone");
+                                    parent.logMessageDJI("Error uploading waypoint mission to drone, retrying...");
+                                getWaypointMissionOperator().retryUploadMission(null);
 
                             } else {
                                 parent.logMessageDJI("Error uploading: " + djiError.getDescription());
@@ -983,6 +984,7 @@ public class DroneModel implements CommonCallbacks.CompletionCallback {
     }
 
     public void startWaypointMission() {
+
         if (getWaypointMissionOperator() == null) {
             parent.logMessageDJI("start WaypointMission() - WaypointMissionOperator null");
             return;
@@ -995,19 +997,21 @@ public class DroneModel implements CommonCallbacks.CompletionCallback {
             return;
         }
         if (mSafetyEnabled) {
-            parent.logMessageDJI("You must turn off safety_layout to start mission");
+            parent.logMessageDJI("You must turn off the safety to start mission");
             return;
+        } else {
+            getWaypointMissionOperator().startMission(new CommonCallbacks.CompletionCallback() {
+                @Override
+                public void onResult(DJIError djiError) {
+                    if (djiError != null)
+                        parent.logMessageDJI("Error: " + djiError.toString());
+                    else
+                        parent.logMessageDJI("Mission started!");
+                }
+            });
         }
 
-        getWaypointMissionOperator().startMission(new CommonCallbacks.CompletionCallback() {
-            @Override
-            public void onResult(DJIError djiError) {
-                if (djiError != null)
-                    parent.logMessageDJI("Error: " + djiError.toString());
-                else
-                    parent.logMessageDJI("Mission started!");
-            }
-        });
+
     }
 
 
@@ -1052,6 +1056,12 @@ public class DroneModel implements CommonCallbacks.CompletionCallback {
     }
 
     public void resumeWaypointMission() {
+        if (isSafetyEnabled()) {
+            parent.logMessageDJI(parent.getResources().getString(R.string.safety_launch));
+            send_command_ack(MAV_CMD_NAV_TAKEOFF, MAV_RESULT.MAV_RESULT_DENIED);
+            return;
+        }
+
         if (getWaypointMissionOperator() == null) {
             parent.logMessageDJI("resumeWaypointMission() - mWaypointMissionOperator null");
             return;
@@ -1075,7 +1085,7 @@ public class DroneModel implements CommonCallbacks.CompletionCallback {
 
     public void do_takeoff() {
         if (mSafetyEnabled) {
-            parent.logMessageDJI("You must turn off safety_layout to takeoff");
+            parent.logMessageDJI(parent.getResources().getString(R.string.safety_launch));
             send_command_ack(MAV_CMD_NAV_TAKEOFF, MAV_RESULT.MAV_RESULT_DENIED);
             return;
         }
