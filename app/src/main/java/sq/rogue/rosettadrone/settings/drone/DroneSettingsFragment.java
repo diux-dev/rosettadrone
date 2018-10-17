@@ -15,6 +15,7 @@ import sq.rogue.rosettadrone.R;
 
 import static sq.rogue.rosettadrone.util.TYPE_DRONE_ID;
 import static sq.rogue.rosettadrone.util.TYPE_DRONE_RTL_ALTITUDE;
+import static sq.rogue.rosettadrone.util.TYPE_FLIGHT_PATH_RADIUS;
 
 public class DroneSettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = DroneSettingsFragment.class.getSimpleName();
@@ -50,8 +51,7 @@ public class DroneSettingsFragment extends PreferenceFragmentCompat implements S
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
     }
-
-//    /**
+    //    /**
 //     *
 //     */
 //    @Override
@@ -100,6 +100,7 @@ public class DroneSettingsFragment extends PreferenceFragmentCompat implements S
                 try {
                     if (Integer.parseInt((String) newValue) >= 1 && Integer.parseInt((String) newValue) <= 254) {
                         MainActivity.FLAG_PREFS_CHANGED = true;
+                        MainActivity.FLAG_DRONE_ID_CHANGED = true;
                         return true;
                     }
                 } catch (NumberFormatException ignored) {
@@ -116,6 +117,7 @@ public class DroneSettingsFragment extends PreferenceFragmentCompat implements S
                 try {
                     if (Integer.parseInt((String) newValue) >= 20 && Integer.parseInt((String) newValue) <= 500) {
                         MainActivity.FLAG_PREFS_CHANGED = true;
+                        MainActivity.FLAG_DRONE_RTL_ALTITUDE_CHANGED = true;
                         return true;
                     }
                 } catch (NumberFormatException ignored) {
@@ -123,6 +125,104 @@ public class DroneSettingsFragment extends PreferenceFragmentCompat implements S
                 NotificationHandler.notifyAlert(DroneSettingsFragment.this.getActivity(), TYPE_DRONE_RTL_ALTITUDE,
                         null, null);
                 return false;
+            }
+        });
+        findPreference("pref_drone_smart_rtl").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                MainActivity.FLAG_PREFS_CHANGED = true;
+                MainActivity.FLAG_DRONE_SMART_RTL_CHANGED = true;
+                return true;
+            }
+        });
+        findPreference("pref_drone_max_height").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                try {
+                    if (Integer.parseInt((String) newValue) >= 20 && Integer.parseInt((String) newValue) <= 500) {
+                        MainActivity.FLAG_PREFS_CHANGED = true;
+                        MainActivity.FLAG_DRONE_MAX_HEIGHT_CHANGED = true;
+                        return true;
+                    }
+                } catch (NumberFormatException ignored) {
+                }
+                return false;
+            }
+        });
+        findPreference("pref_drone_multi_mode").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                MainActivity.FLAG_PREFS_CHANGED = true;
+                MainActivity.FLAG_DRONE_MULTI_MODE_CHANGED = true;
+                return true;
+            }
+        });
+        findPreference("pref_drone_leds").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                MainActivity.FLAG_PREFS_CHANGED = true;
+                MainActivity.FLAG_DRONE_LEDS_CHANGED = true;
+                return true;
+            }
+        });
+
+        findPreference("pref_drone_flight_path_mode").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                MainActivity.FLAG_PREFS_CHANGED = true;
+                MainActivity.FLAG_DRONE_FLIGHT_PATH_MODE_CHANGED = true;
+                return true;
+            }
+        });
+        findPreference("pref_drone_flight_path_radius").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                try {
+                    if (Float.parseFloat((String) newValue) >= .2f && Float.parseFloat((String) newValue) <= 1000) {
+                        MainActivity.FLAG_PREFS_CHANGED = true;
+                        MainActivity.FLAG_DRONE_FLIGHT_PATH_MODE_CHANGED = true;
+                        return true;
+                    }
+                } catch (NumberFormatException ignored) {
+                }
+                NotificationHandler.notifyAlert(DroneSettingsFragment.this.getActivity(), TYPE_FLIGHT_PATH_RADIUS,
+                        null, null);
+                return false;
+            }
+        });
+
+
+        findPreference("pref_drone_collision_avoidance").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                MainActivity.FLAG_PREFS_CHANGED = true;
+                MainActivity.FLAG_DRONE_COLLISION_AVOIDANCE_CHANGED = true;
+                return true;
+            }
+        });
+        findPreference("pref_drone_upward_avoidance").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                MainActivity.FLAG_PREFS_CHANGED = true;
+                MainActivity.FLAG_DRONE_UPWARD_AVOIDANCE_CHANGED = true;
+                return true;
+            }
+        });
+        findPreference("pref_drone_landing_protection").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                MainActivity.FLAG_PREFS_CHANGED = true;
+                MainActivity.FLAG_DRONE_LANDING_PROTECTION_CHANGED = true;
+                return true;
             }
         });
     }

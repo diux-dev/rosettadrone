@@ -15,15 +15,15 @@ import sq.rogue.rosettadrone.R;
 
 import static sq.rogue.rosettadrone.util.TYPE_GCS_IP;
 import static sq.rogue.rosettadrone.util.TYPE_GCS_PORT;
+import static sq.rogue.rosettadrone.util.TYPE_VIDEO_BITRATE;
 import static sq.rogue.rosettadrone.util.TYPE_VIDEO_IP;
 import static sq.rogue.rosettadrone.util.TYPE_VIDEO_PORT;
 
 // Display value of preference in summary field
 
 public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
-    private static final String TAG = SettingsFragment.class.getSimpleName();
     protected static final String PAGE_ID = "settings";
-
+    private static final String TAG = SettingsFragment.class.getSimpleName();
     SharedPreferences sharedPreferences;
 
 
@@ -61,15 +61,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
             public boolean onPreferenceChange(Preference preference, Object newValue) {
 
                 MainActivity.FLAG_PREFS_CHANGED = true;
+                MainActivity.FLAG_TELEMETRY_ADDRESS_CHANGED = true;
+                MainActivity.FLAG_VIDEO_ADDRESS_CHANGED = true;
+
                 return true;
             }
         });
 
-        findPreference("pref_combined_gcs").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        findPreference("pref_separate_gcs").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
 
                 MainActivity.FLAG_PREFS_CHANGED = true;
+                MainActivity.FLAG_VIDEO_ADDRESS_CHANGED = true;
                 return true;
             }
         });
@@ -80,6 +84,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
                 if (Patterns.IP_ADDRESS.matcher((String) newValue).matches()) {
                     MainActivity.FLAG_PREFS_CHANGED = true;
+                    MainActivity.FLAG_TELEMETRY_ADDRESS_CHANGED = true;
                     return true;
                 } else {
                     NotificationHandler.notifyAlert(SettingsFragment.this.getActivity(), TYPE_GCS_IP,
@@ -95,6 +100,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 try {
                     if (Integer.parseInt((String) newValue) >= 1 && Integer.parseInt((String) newValue) <= 65535) {
                         MainActivity.FLAG_PREFS_CHANGED = true;
+                        MainActivity.FLAG_TELEMETRY_ADDRESS_CHANGED = true;
                         return true;
                     }
                 } catch (NumberFormatException ignored) {
@@ -105,13 +111,45 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
             }
         });
 
+        findPreference("pref_secondary_telemetry_ip").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
 
+                if (Patterns.IP_ADDRESS.matcher((String) newValue).matches()) {
+                    MainActivity.FLAG_PREFS_CHANGED = true;
+                    MainActivity.FLAG_TELEMETRY_ADDRESS_CHANGED = true;
+                    return true;
+                } else {
+                    NotificationHandler.notifyAlert(SettingsFragment.this.getActivity(), TYPE_GCS_IP,
+                            null, null);
+                    return false;
+                }
+            }
+        });
+
+        findPreference("pref_secondary_telemetry_port").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                try {
+                    if (Integer.parseInt((String) newValue) >= 1 && Integer.parseInt((String) newValue) <= 65535) {
+                        MainActivity.FLAG_PREFS_CHANGED = true;
+                        MainActivity.FLAG_TELEMETRY_ADDRESS_CHANGED = true;
+                        return true;
+                    }
+                } catch (NumberFormatException ignored) {
+                }
+                NotificationHandler.notifyAlert(SettingsFragment.this.getActivity(), TYPE_GCS_PORT,
+                        null, null);
+                return false;
+            }
+        });
 
         findPreference("pref_video_ip").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 if (Patterns.IP_ADDRESS.matcher((String) newValue).matches()) {
                     MainActivity.FLAG_PREFS_CHANGED = true;
+                    MainActivity.FLAG_VIDEO_ADDRESS_CHANGED = true;
                     return true;
                 } else {
                     NotificationHandler.notifyAlert(SettingsFragment.this.getActivity(), TYPE_VIDEO_IP,
@@ -126,6 +164,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
             public boolean onPreferenceChange(Preference preference, Object newValue) {
 
                 MainActivity.FLAG_PREFS_CHANGED = true;
+                MainActivity.FLAG_VIDEO_ADDRESS_CHANGED = true;
                 return true;
             }
         });
@@ -136,6 +175,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 try {
                     if (Integer.parseInt((String) newValue) >= 1 && Integer.parseInt((String) newValue) <= 65535) {
                         MainActivity.FLAG_PREFS_CHANGED = true;
+                        MainActivity.FLAG_VIDEO_ADDRESS_CHANGED = true;
                         return true;
                     }
                 } catch (NumberFormatException ignored) {
@@ -143,6 +183,32 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 NotificationHandler.notifyAlert(SettingsFragment.this.getActivity(), TYPE_VIDEO_PORT,
                         null, null);
                 return false;
+            }
+        });
+
+        findPreference("pref_video_bitrate").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                try {
+                    if (Integer.parseInt((String) newValue) >= 1 && Integer.parseInt((String) newValue) <= 65535) {
+                        MainActivity.FLAG_PREFS_CHANGED = true;
+                        MainActivity.FLAG_VIDEO_ADDRESS_CHANGED = true;
+                        return true;
+                    }
+                } catch (NumberFormatException ignored) {
+                }
+                NotificationHandler.notifyAlert(SettingsFragment.this.getActivity(), TYPE_VIDEO_BITRATE,
+                        null, null);
+                return false;
+            }
+        });
+
+        findPreference("pref_encode_speed").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                MainActivity.FLAG_PREFS_CHANGED = true;
+                MainActivity.FLAG_VIDEO_ADDRESS_CHANGED = true;
+                return true;
             }
         });
     }
@@ -156,7 +222,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         super.onResume();
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
-
         for (int i = 0; i < getPreferenceScreen().getPreferenceCount(); ++i) {
             Preference preference = getPreferenceScreen().getPreference(i);
             if (preference instanceof PreferenceGroup) {
@@ -169,6 +234,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 updatePreference(preference);
             }
         }
+
     }
 
     /**
@@ -216,4 +282,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         SharedPreferences sharedPrefs = getPreferenceManager().getSharedPreferences();
         preference.setSummary(sharedPrefs.getString(preference.getKey(), "Default"));
     }
+
+
 }

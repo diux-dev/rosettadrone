@@ -47,6 +47,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/dji"
+                    android:textColor="@color/black"
                     android:paddingStart="5dp"
                     android:paddingEnd="20dp" />
 
@@ -64,6 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/gcs"
+                    android:textColor="@color/black"
                     android:paddingStart="5dp"
                     android:paddingEnd="20dp" />
 
@@ -105,18 +107,18 @@
         android:elevation="6dp"
         android:fitsSystemWindows="false" >
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/ic_file_download_black_24dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@color/secondary" />
+        <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fab"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom|end"-->
+        <!--android:layout_margin="16dp"-->
+        <!--android:clickable="true"-->
+        <!--android:focusable="true"-->
+        <!--android:src="@drawable/ic_file_download_black_24dp"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent"-->
+        <!--app:srcCompat="@color/secondary" />-->
 
     </android.support.design.widget.CoordinatorLayout>
 
@@ -132,7 +134,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:menu="@menu/nav_menu"
-         />
+        />
 
 
 </android.support.constraint.ConstraintLayout>
