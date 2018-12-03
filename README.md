@@ -48,12 +48,9 @@ Note that if you are using QGroundControl on the same device as RosettaDrone, th
  
 3. Sign up for the DJI Developer Program at https://developer.dji.com/mobile-sdk/ and create an Application key. The package name should be sq.rogue.rosettadrone.
  
-4. Create a new file called keys.xml in the /values folder, and insert the following:
+4. Create a new file `~/.gradle/gradle.properties` if you don't have one yet, and add the following line to it:
     ```
-    <?xml version="1.0" encoding="utf-8"?>
-    <resources>
-        <string name="dji_key">INSERT KEY HERE</string>
-    </resources>
+    DJI_API_KEY_ROSETTA_DRONE=INSERT KEY HERE
     ```
     
 5. Run **Build->Make Project**
