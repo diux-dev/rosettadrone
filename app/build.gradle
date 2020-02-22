@@ -10,6 +10,7 @@ android {
         versionName "1.2.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        manifestPlaceholders = [DJIApiKey: project.properties['DJI_API_KEY_ROSETTA_DRONE']]
     }
 
     buildTypes {
