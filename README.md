@@ -1,4 +1,8 @@
-# This project is not being actively maintained anymore. Please take a look at various forks for further development.
+# Ths repo deprecated
+
+DIU is no longer maintaining this product.
+
+Another team has forked the project and is activel maintaining it at https://github.com/The1only/rosettadrone
 
 
 
