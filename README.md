@@ -50,6 +50,14 @@ Note that if you are using QGroundControl on the same device as RosettaDrone, th
     
 # Building from source
 
+## Requirements
+
+ * Android Studio: https://developer.android.com/studio/
+ * Ninja: `apt-get install ninja-build`
+ * Git LFS: https://git-lfs.github.com/
+ 
+## Steps
+
 1. Clone or download the repository.
 
 2. In Android Studio, select **File->New->Import Project** and navigate to the downloaded folder.
